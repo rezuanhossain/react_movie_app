@@ -7,7 +7,6 @@ const MovieDetail = () => {
 
   useEffect(() => {
     const storedMovieData = JSON.parse(window.localStorage.getItem('movieData'))[movieId];
-
     setMovie(storedMovieData);   
   },[]);
 
