@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import DatePicker from "react-datepicker";
@@ -15,6 +16,8 @@ const AddMovie = () => {
     const [editIndex, setEditIndex] = useState(null);
     const [selectedCategory, setSelectedCategory] = useState("");
     const [categories, setCategories] = useState([]);
+    const [selectedGenre, setSelectedGenre] = useState("");
+    const [genres, setGenres] = useState([]);
 
     useEffect(() => {
         const storedMovieData = JSON.parse(window.localStorage.getItem('movieData'));
@@ -25,6 +28,10 @@ const AddMovie = () => {
         const storedCategories = JSON.parse(window.localStorage.getItem('categories'));
         if (storedCategories) {
             setCategories(storedCategories);
+        }
+        const storedGenres = JSON.parse(window.localStorage.getItem('genres'));
+        if (storedGenres) {
+            setGenres(storedGenres);
         }
     }, []);
 
@@ -38,7 +45,7 @@ const AddMovie = () => {
         event.preventDefault();
         let oldData = JSON.parse(window.localStorage.getItem('movieData')) ?? [];
 
-        const movieDetails = { ...inputs, release_date: startDate, category: selectedCategory };
+        const movieDetails = { ...inputs, release_date: startDate, category: selectedCategory, genre: selectedGenre };
 
         if (editIndex !== null) {
             oldData[editIndex] = movieDetails;
@@ -54,6 +61,7 @@ const AddMovie = () => {
         setShowModal(false);
         setEditIndex(null);
         setSelectedCategory("");
+        setSelectedGenre("");
     };
 
     const handleDelete = (index) => {
@@ -70,6 +78,7 @@ const AddMovie = () => {
         setEditIndex(index);
         setShowModal(true);
         setSelectedCategory(movie.category || "");
+        setSelectedGenre(movie.genre || "");
     };
 
     let base64String = "";
@@ -95,6 +104,9 @@ const AddMovie = () => {
             </div>
             <div className='m-5'>
                 <Link to={'/category'}><button>Category</button></Link>
+            </div>
+            <div className='m-5'>
+                <Link to={'/genre'}><button>Genre</button></Link>
             </div>
             <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@mdo" onClick={() => setShowModal(true)}>Add Movie</button>
             {showModal && (
@@ -126,10 +138,6 @@ const AddMovie = () => {
                                         <input type="text" className="form-control" id="star_cast" name="star_cast" value={inputs.star_cast || ""} onChange={handleChange} required />
                                     </div>
                                     <div className="mb-3">
-                                        <label htmlFor="genre" className="form-label">Genre</label>
-                                        <input type="text" className="form-control" id="genre" name="genre" value={inputs.genre || ""} onChange={handleChange} required />
-                                    </div>
-                                    <div className="mb-3">
                                         <label htmlFor="duration" className="form-label">Duration</label>
                                         <input type="text" className="form-control" id="duration" name="duration" value={inputs.duration || ""} onChange={handleChange} required />
                                     </div>
@@ -143,6 +151,15 @@ const AddMovie = () => {
                                             <option value="">Select a category</option>
                                             {categories.map((category, index) => (
                                                 <option key={index} value={category}>{category}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="mb-3">
+                                        <label htmlFor="genre" className="form-label">Genre</label>
+                                        <select className="form-control" id="genre" value={selectedGenre} onChange={(e) => setSelectedGenre(e.target.value)} required>
+                                            <option value="">Select a genre</option>
+                                            {genres.map((genre, index) => (
+                                                <option key={index} value={genre}>{genre}</option>
                                             ))}
                                         </select>
                                     </div>
@@ -163,9 +180,9 @@ const AddMovie = () => {
                         <th scope="col">Description</th>
                         <th scope="col">Release Date</th>
                         <th scope="col">Star Cast</th>
-                        <th scope="col">Genre</th>
                         <th scope="col">Duration</th>
                         <th scope="col">Language</th>
+                        <th scope="col">Genre</th>
                         <th scope="col">Actions</th>
                     </tr>
                 </thead>
@@ -183,9 +200,9 @@ const AddMovie = () => {
                                 <td>{movie.description}</td>
                                 <td>{new Date(movie.release_date).toLocaleDateString()}</td>
                                 <td>{movie.star_cast}</td>
-                                <td>{movie.genre}</td>
                                 <td>{movie.duration}</td>
                                 <td>{movie.category}</td>
+                                <td>{movie.genre}</td>
                                 <td>
                                     <button className="btn btn-danger" onClick={() => handleDelete(index)}>Delete</button>
                                     <button className="btn btn-primary" onClick={() => handleEdit(index)}>Edit</button>

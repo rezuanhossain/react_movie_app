@@ -1,6 +1,7 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
-
-const CategoryForm = ({ selectedCategory, setSelectedCategory }) => {
+import { Link } from "react-router-dom";
+const CategoryForm = () => {
   const [categories, setCategories] = useState([]);
   const [newCategory, setNewCategory] = useState("");
 
@@ -28,6 +29,9 @@ const CategoryForm = ({ selectedCategory, setSelectedCategory }) => {
 
   return (
     <div>
+      <div className='m-5'>
+        <Link to={'/admin'}><button>Back to Add Movie</button></Link>
+      </div>
       <div className="mb-3">
         <input 
           type="text" 

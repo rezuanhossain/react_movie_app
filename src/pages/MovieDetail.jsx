@@ -19,9 +19,9 @@ const MovieDetail = () => {
             <p>{movie.description}</p>
             <p>Release Date: {new Date(movie.release_date).toLocaleDateString()}</p>
             <p>Star Cast: {movie.star_cast}</p>
-            <p>Genre: {movie.genre}</p>
             <p>Duration: {movie.duration}</p>
             <p>Language: {movie.language}</p>
+            <p>Genre: {movie.genre}</p>
         </div>
       )}
     </div>
