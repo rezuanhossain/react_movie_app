@@ -4,12 +4,13 @@ import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import '../App.css'
+import '../App.css';
 import { Link } from "react-router-dom";
 
 const AddMovie = () => {
     const [inputs, setInputs] = useState({});
     const [imgData, setImgData] = useState();
+    const [additionalImages, setAdditionalImages] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [movieData, setMovieData] = useState([]);
     const [startDate, setStartDate] = useState(new Date());
@@ -45,7 +46,7 @@ const AddMovie = () => {
         event.preventDefault();
         let oldData = JSON.parse(window.localStorage.getItem('movieData')) ?? [];
 
-        const movieDetails = { ...inputs, release_date: startDate, category: selectedCategory, genre: selectedGenre };
+        const movieDetails = { ...inputs, release_date: startDate, category: selectedCategory, genre: selectedGenre, additional_images: additionalImages };
 
         if (editIndex !== null) {
             oldData[editIndex] = movieDetails;
@@ -57,6 +58,7 @@ const AddMovie = () => {
         setMovieData(oldData);
         setInputs({});
         setImgData(null);
+        setAdditionalImages([]);
         setStartDate(new Date());
         setShowModal(false);
         setEditIndex(null);
@@ -74,6 +76,7 @@ const AddMovie = () => {
         const movie = movieData[index];
         setInputs(movie);
         setImgData(movie.poster);
+        setAdditionalImages(movie.additional_images || []);
         setStartDate(new Date(movie.release_date));
         setEditIndex(index);
         setShowModal(true);
@@ -82,10 +85,10 @@ const AddMovie = () => {
     };
 
     let base64String = "";
-    const imageUploaded = () => {
-        let file = document.querySelector('input[type=file]')['files'][0];
-
+    const imageUploaded = (event) => {
+        let files = event.target.files;
         let reader = new FileReader();
+
         reader.onload = function () {
             base64String = reader.result;
             setInputs((prev) => ({
@@ -94,7 +97,25 @@ const AddMovie = () => {
             }));
             setImgData(base64String);
         };
-        reader.readAsDataURL(file);
+
+        reader.readAsDataURL(files[0]);
+    };
+
+    const additionalImagesUploaded = (event) => {
+        let files = Array.from(event.target.files);
+        let promises = files.map(file => {
+            return new Promise((resolve, reject) => {
+                let reader = new FileReader();
+                reader.onload = function () {
+                    resolve(reader.result);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
+        Promise.all(promises).then(images => {
+            setAdditionalImages(images);
+        });
     };
 
     return (
@@ -123,6 +144,15 @@ const AddMovie = () => {
                                         <input className="form-control" type="file" id="formFile" name='poster' onChange={imageUploaded} required={!imgData} />
                                         <div className=''>
                                             <img src={imgData} alt="" className='h-100px w-100px' />
+                                        </div>
+                                    </div>
+                                    <div className="mb-3">
+                                        <label htmlFor="additionalImages" className="form-label">Additional Images</label>
+                                        <input className="form-control" type="file" id="additionalImages" name='additionalImages' onChange={additionalImagesUploaded} multiple />
+                                        <div className=''>
+                                            {additionalImages.map((img, index) => (
+                                                <img key={index} src={img} alt="" className='h-100px w-100px' />
+                                            ))}
                                         </div>
                                     </div>
                                     <div className="mb-3">
@@ -213,7 +243,7 @@ const AddMovie = () => {
                 </tbody>
             </table>
         </div>
-    )
+    );
 }
 
 export default AddMovie;

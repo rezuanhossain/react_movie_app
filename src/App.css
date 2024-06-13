@@ -47,3 +47,10 @@
 .w-100px{
  width: 100px;
 }
+
+.additional-images img {
+  margin: 5px;
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+}
