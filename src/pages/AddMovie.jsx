@@ -235,7 +235,7 @@ const AddMovie = () => {
                                 <td>{movie.genre}</td>
                                 <td>
                                     <button className="btn btn-danger" onClick={() => handleDelete(index)}>Delete</button>
-                                    <button className="btn btn-primary" onClick={() => handleEdit(index)}>Edit</button>
+                                    <button className="btn btn-success" onClick={() => handleEdit(index)}>Edit</button>
                                 </td>
                             </tr>
                         )

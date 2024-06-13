@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+/* eslint-disable no-unused-vars */
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 
 const MovieDetail = () => {
   const { movieId } = useParams();
   const [movie, setMovie] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const storedMovieData = JSON.parse(window.localStorage.getItem('movieData'));
@@ -14,9 +16,11 @@ const MovieDetail = () => {
     <div>
       {movie && (
         <div>
+          <button onClick={() => navigate('/')} className="btn btn-warning fw-bold mb-3">Homepage</button>
           <h1>{movie.movie_name}</h1>
           <img src={movie.poster} alt={movie.movie_name} className="img-fluid rounded-start" />
           <div className="additional-images">
+            <h4>ScreenShort</h4>
             {movie.additional_images && movie.additional_images.map((image, index) => (
               <img key={index} src={image} alt={`Additional ${index}`} className="img-fluid rounded-start" />
             ))}
