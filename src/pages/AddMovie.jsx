@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import DatePicker from "react-datepicker";
@@ -46,7 +44,13 @@ const AddMovie = () => {
         event.preventDefault();
         let oldData = JSON.parse(window.localStorage.getItem('movieData')) ?? [];
 
-        const movieDetails = { ...inputs, release_date: startDate, category: selectedCategory, genre: selectedGenre, additional_images: additionalImages };
+        // Ensure trailer URL is in embed format
+        let trailerUrl = inputs.trailer;
+        if (trailerUrl.includes("watch?v=")) {
+            trailerUrl = trailerUrl.replace("watch?v=", "embed/");
+        }
+
+        const movieDetails = { ...inputs, trailer: trailerUrl, release_date: startDate, category: selectedCategory, genre: selectedGenre, additional_images: additionalImages };
 
         if (editIndex !== null) {
             oldData[editIndex] = movieDetails;
@@ -124,7 +128,7 @@ const AddMovie = () => {
                 <Link to={'/'}><button>HomePage</button></Link>
             </div>
             <div className='m-5'>
-                <Link to={'/category'}><button>Category</button></Link>
+                <Link to={'/category'}><button>Language</button></Link>
             </div>
             <div className='m-5'>
                 <Link to={'/genre'}><button>Genre</button></Link>
@@ -192,6 +196,10 @@ const AddMovie = () => {
                                                 <option key={index} value={genre}>{genre}</option>
                                             ))}
                                         </select>
+                                    </div>
+                                    <div className="mb-3">
+                                        <label htmlFor="trailer" className="form-label">Trailer Link</label>
+                                        <input type="text" className="form-control" id="trailer" name="trailer" value={inputs.trailer || ""} onChange={handleChange} required />
                                     </div>
                                     <button type='submit' className="btn btn-primary">Submit</button>
                                 </form>
