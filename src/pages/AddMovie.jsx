@@ -4,6 +4,15 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import '../App.css';
 import { Link } from "react-router-dom";
+import { MultiSelect } from "react-multi-select-component";
+
+
+const genreOptions = [];
+    const options = [
+        { label: "Grapes 🍇", value: "grapes" },
+        { label: "Mango 🥭", value: "mango" },
+        { label: "Strawberry 🍓", value: "strawberry", disabled: true },
+      ];
 
 const AddMovie = () => {
     const [inputs, setInputs] = useState({});
@@ -16,7 +25,10 @@ const AddMovie = () => {
     const [selectedCategory, setSelectedCategory] = useState("");
     const [categories, setCategories] = useState([]);
     const [selectedGenre, setSelectedGenre] = useState("");
-    const [genres, setGenres] = useState([]);
+    
+    const [selectedGenres, setSelectedGenres] = useState([]);
+
+    
 
     useEffect(() => {
         const storedMovieData = JSON.parse(window.localStorage.getItem('movieData'));
@@ -30,7 +42,17 @@ const AddMovie = () => {
         }
         const storedGenres = JSON.parse(window.localStorage.getItem('genres'));
         if (storedGenres) {
-            setGenres(storedGenres);
+           
+            storedGenres.map((genre) => {
+                if (!genreOptions.find(item=> item.value === genre)) {
+                    let genreObj = {
+                        label: genre, 
+                        value: genre
+                    }
+                
+                    genreOptions.push(genreObj)
+                }
+            })
         }
     }, []);
 
@@ -50,7 +72,7 @@ const AddMovie = () => {
             trailerUrl = trailerUrl.replace("watch?v=", "embed/");
         }
 
-        const movieDetails = { ...inputs, trailer: trailerUrl, release_date: startDate, category: selectedCategory, genre: selectedGenre, additional_images: additionalImages };
+        const movieDetails = { ...inputs, trailer: trailerUrl, release_date: startDate, category: selectedCategory, genres: selectedGenres, additional_images: additionalImages };
 
         if (editIndex !== null) {
             oldData[editIndex] = movieDetails;
@@ -67,7 +89,7 @@ const AddMovie = () => {
         setShowModal(false);
         setEditIndex(null);
         setSelectedCategory("");
-        setSelectedGenre("");
+        setSelectedGenres([]);
     };
 
     const handleDelete = (index) => {
@@ -85,7 +107,7 @@ const AddMovie = () => {
         setEditIndex(index);
         setShowModal(true);
         setSelectedCategory(movie.category || "");
-        setSelectedGenre(movie.genre || "");
+        setSelectedGenres(movie.genres || []);
     };
 
     let base64String = "";
@@ -188,14 +210,14 @@ const AddMovie = () => {
                                             ))}
                                         </select>
                                     </div>
-                                    <div className="mb-3">
-                                        <label htmlFor="genre" className="form-label">Genre</label>
-                                        <select className="form-control" id="genre" value={selectedGenre} onChange={(e) => setSelectedGenre(e.target.value)} required>
-                                            <option value="">Select a genre</option>
-                                            {genres.map((genre, index) => (
-                                                <option key={index} value={genre}>{genre}</option>
-                                            ))}
-                                        </select>
+                                    
+                                    <div className='mb-3'>
+                                        <MultiSelect
+                                            options={genreOptions}
+                                            value={selectedGenres}
+                                            onChange={setSelectedGenres}
+                                            labelledBy="Select Genres"
+                                        />
                                     </div>
                                     <div className="mb-3">
                                         <label htmlFor="trailer" className="form-label">Trailer Link</label>
@@ -240,7 +262,9 @@ const AddMovie = () => {
                                 <td>{movie.star_cast}</td>
                                 <td>{movie.duration}</td>
                                 <td>{movie.category}</td>
-                                <td>{movie.genre}</td>
+                                <td>{movie.genres?.map((genre)=>{
+                                    return <div><span> {genre?.label} </span> <br /></div>
+                                })}</td>
                                 <td>
                                     <button className="btn btn-danger" onClick={() => handleDelete(index)}>Delete</button>
                                     <button className="btn btn-success" onClick={() => handleEdit(index)}>Edit</button>
