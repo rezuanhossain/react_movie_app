@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { Link } from "react-router-dom";
+import Slider from "react-slick";
 
 const MovieDetail = () => {
     const { movieId } = useParams();
@@ -7,6 +9,7 @@ const MovieDetail = () => {
     const [relatedMovies, setRelatedMovies] = useState([]);
     const [activeTab, setActiveTab] = useState('info');
     const navigate = useNavigate();
+    let sliderRef = useRef(null);
 
     useEffect(() => {
         const storedMovieData = JSON.parse(window.localStorage.getItem('movieData'));
@@ -15,15 +18,66 @@ const MovieDetail = () => {
 
         if (storedMovieData) {
             setMovie(storedMovieData[movieId]);
-
-            // Fetch related movie details
-            const relatedMoviesData = storedMovieData[movieId].existing_movies.map(movieName => {
-                return storedMovieData.find(movie => movie.movie_name === movieName);
-            });
-
-            setRelatedMovies(relatedMoviesData);
+            if (Object.keys(storedMovieData[movieId]).includes('related_movies')){
+                const relatedMoviesData = [];
+                 storedMovieData[movieId].related_movies.map(movieName => {
+                    relatedMoviesData [movieName.value] = storedMovieData.find((movie,index) => movie.movie_name == movieName.label);
+                });
+                
+                setRelatedMovies(relatedMoviesData);
+            }
+            else{
+                setRelatedMovies([]);
+            }    
         }
     }, [movieId]);
+
+    const next = () => {
+      sliderRef.slickNext();
+    };
+    const previous = () => {
+      sliderRef.slickPrev();
+    };
+
+    var settings = {
+        dots: true,
+        infinite: true,
+        arrow:false,
+        speed: 500,
+        slidesToShow: 3,
+        slidesToScroll: 1,
+        lazyLoad: true,
+        autoplay: true,
+        autoplaySpeed: 2000,
+        pauseOnHover: true,
+        
+        responsive: [
+            {
+              breakpoint: 1024,
+              settings: {
+                slidesToShow: 3,
+                slidesToScroll: 3,
+                infinite: true,
+                dots: true
+              }
+            },
+            {
+              breakpoint: 600,
+              settings: {
+                slidesToShow: 2,
+                slidesToScroll: 2,
+                initialSlide: 2
+              }
+            },
+            {
+              breakpoint: 480,
+              settings: {
+                slidesToShow: 1,
+                slidesToScroll: 1
+              }
+            }
+          ]
+      };
 
     return (
         <div>
@@ -90,7 +144,6 @@ const MovieDetail = () => {
                         </div>
                     )}
 
-                    {/* Related Movies Section */}
                     <div className="mt-4">
                         <h3>Related Movies</h3>
                         <div className="row">
@@ -101,10 +154,35 @@ const MovieDetail = () => {
                                         <div className="card-body">
                                             <h5 className="card-title">{relatedMovie.movie_name}</h5>
                                         </div>
+                                        <Link to={`/movies/${index}`} className="btn btn-primary">View Details</Link>
                                     </div>
                                 </div>
                             ))}
                         </div>
+
+                    </div>
+                    <div className="">
+                        <h2>Auto Play {"&"} Pause with buttons</h2>
+                        <Slider ref={slider => (sliderRef = slider)} {...settings}>
+                            <div>
+                            <h3>1</h3>
+                            </div>
+                            <div>
+                            <h3>2</h3>
+                            </div>
+                            <div>
+                            <h3>3</h3>
+                            </div>
+                            <div>
+                            <h3>4</h3>
+                            </div>
+                            <div>
+                            <h3>5</h3>
+                            </div>
+                            <div>
+                            <h3>6</h3>
+                            </div>
+                        </Slider>
                     </div>
                 </div>
             )}

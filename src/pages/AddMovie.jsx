@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import { MultiSelect } from "react-multi-select-component";
 
 const genreOptions = [];
+const movieOptions = [];
 
 const AddMovie = () => {
     const [inputs, setInputs] = useState({});
@@ -19,12 +20,19 @@ const AddMovie = () => {
     const [selectedCategory, setSelectedCategory] = useState("");
     const [categories, setCategories] = useState([]);
     const [selectedGenres, setSelectedGenres] = useState([]);
-    const [selectedExistingMovies, setSelectedExistingMovies] = useState([]);
+    const [selectedRelatedMovies, setSelectedRelatedMovies] = useState([]);
 
     useEffect(() => {
         const storedMovieData = JSON.parse(window.localStorage.getItem('movieData'));
         if (storedMovieData) {
             setMovieData(storedMovieData);
+            storedMovieData.map((movie,index) => {
+                let movieObj = {
+                    label: movie.movie_name, 
+                    value: index
+                }
+                movieOptions.push(movieObj);
+            });
         }
 
         const storedCategories = JSON.parse(window.localStorage.getItem('categories'));
@@ -67,7 +75,7 @@ const AddMovie = () => {
             category: selectedCategory, 
             genres: selectedGenres, 
             additional_images: additionalImages,
-            existing_movies: selectedExistingMovies.map(movie => movie.value)
+            related_movies: selectedRelatedMovies
         };
 
         if (editIndex !== null) {
@@ -86,7 +94,7 @@ const AddMovie = () => {
         setEditIndex(null);
         setSelectedCategory("");
         setSelectedGenres([]);
-        setSelectedExistingMovies([]);
+        setSelectedRelatedMovies([]);
     };
 
     const handleDelete = (index) => {
@@ -105,7 +113,7 @@ const AddMovie = () => {
         setShowModal(true);
         setSelectedCategory(movie.category || "");
         setSelectedGenres(movie.genres || []);
-        setSelectedExistingMovies(movie.existing_movies ? movie.existing_movies.map(movieName => ({ label: movieName, value: movieName })) : []);
+        setSelectedRelatedMovies(movie.related_movies || []);
     };
 
     let base64String = "";
@@ -142,10 +150,7 @@ const AddMovie = () => {
         });
     };
 
-    const movieOptions = movieData.map(movie => ({
-        label: movie.movie_name,
-        value: movie.movie_name
-    }));
+    
 
     return (
         <div>
@@ -217,8 +222,9 @@ const AddMovie = () => {
                                         </div>
                                         
                                         <div className='mb-3'>
-                                            <label htmlFor="category" className="form-label">Genres</label>
+                                            <label htmlFor="genres" className="form-label">Genres</label>
                                             <MultiSelect
+                                                id = "genres"
                                                 options={genreOptions}
                                                 value={selectedGenres}
                                                 onChange={setSelectedGenres}
@@ -227,12 +233,14 @@ const AddMovie = () => {
                                         </div>
 
                                         <div className="mb-3">
-                                            <label htmlFor="existingMovies" className="form-label">Related Movies</label>
+                                            <label htmlFor="relatedMovies" className="form-label">Related Movies</label>
+                                            {console.log("aa", movieOptions)}
                                             <MultiSelect
+                                                id = "relatedMovies"
                                                 options={movieOptions}
-                                                value={selectedExistingMovies}
-                                                onChange={setSelectedExistingMovies}
-                                                labelledBy="Select Existing Movies"
+                                                value={selectedRelatedMovies}
+                                                onChange={setSelectedRelatedMovies}
+                                                labelledBy="Select Related Movies"
                                             />
                                         </div>
 
@@ -283,8 +291,8 @@ const AddMovie = () => {
                                     <td>{movie.genres?.map((genre, index) => (
                                         <div key={index}><span>{genre?.label}</span><br /></div>
                                     ))}</td>
-                                    <td>{movie.existing_movies?.map((relatedMovie, index) => (
-                                        <div key={index}>{relatedMovie}</div>
+                                    <td>{movie.related_movies?.map((movie, index) => (
+                                        <div key={index}><span>{movie?.label}</span><br /></div>
                                     ))}</td>
                                     <td>
                                         <button className="btn btn-danger" onClick={() => handleDelete(index)}>Delete</button>
