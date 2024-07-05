@@ -34,13 +34,15 @@ const MovieDetail = () => {
               <p>Star Cast: {movie.star_cast}</p>
               <p>Duration: {movie.duration}</p>
               <p>Category: {movie.category}</p>
-              <p>Genre: {movie.genre}</p>
+              <p>Genre: {movie.genres.map((genre) => genre.label).join(', ')}</p>
             </div>
           )}
 
           {activeTab === 'trailer' && (
             <div>
-              <h4>Trailer</h4>
+              <h1>{movie.movie_name}</h1>
+              <img src={movie.poster} alt={movie.movie_name} className="img-fluid rounded-start mb-3" />
+              <br />
               <iframe
                 width="560"
                 height="315"
@@ -55,7 +57,9 @@ const MovieDetail = () => {
 
           {activeTab === 'gallery' && (
             <div>
-              <h4>Gallery</h4>
+              <h1>{movie.movie_name}</h1>
+              <img src={movie.poster} alt={movie.movie_name} className="img-fluid rounded-start mb-3" />
+              <br />
               {movie.additional_images && movie.additional_images.map((image, index) => (
                 <img key={index} src={image} alt={`Additional ${index}`} className="img-fluid rounded-start" />
               ))}
@@ -64,7 +68,9 @@ const MovieDetail = () => {
 
           {activeTab === 'link' && (
             <div>
-              <h4>Links</h4>
+              <h1>{movie.movie_name}</h1>
+              <img src={movie.poster} alt={movie.movie_name} className="img-fluid rounded-start mb-3" />
+              <br />
               {movie.links && movie.links.map((link, index) => (
                 <p key={index}><a href={link.url} target="_blank" rel="noopener noreferrer">{link.label}</a></p>
               ))}

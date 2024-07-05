@@ -6,13 +6,7 @@ import '../App.css';
 import { Link } from "react-router-dom";
 import { MultiSelect } from "react-multi-select-component";
 
-
 const genreOptions = [];
-    const options = [
-        { label: "Grapes 🍇", value: "grapes" },
-        { label: "Mango 🥭", value: "mango" },
-        { label: "Strawberry 🍓", value: "strawberry", disabled: true },
-      ];
 
 const AddMovie = () => {
     const [inputs, setInputs] = useState({});
@@ -24,11 +18,8 @@ const AddMovie = () => {
     const [editIndex, setEditIndex] = useState(null);
     const [selectedCategory, setSelectedCategory] = useState("");
     const [categories, setCategories] = useState([]);
-    const [selectedGenre, setSelectedGenre] = useState("");
-    
     const [selectedGenres, setSelectedGenres] = useState([]);
-
-    
+    const [selectedExistingMovies, setSelectedExistingMovies] = useState([]);
 
     useEffect(() => {
         const storedMovieData = JSON.parse(window.localStorage.getItem('movieData'));
@@ -42,17 +33,15 @@ const AddMovie = () => {
         }
         const storedGenres = JSON.parse(window.localStorage.getItem('genres'));
         if (storedGenres) {
-           
             storedGenres.map((genre) => {
-                if (!genreOptions.find(item=> item.value === genre)) {
+                if (!genreOptions.find(item => item.value === genre)) {
                     let genreObj = {
                         label: genre, 
                         value: genre
                     }
-                
-                    genreOptions.push(genreObj)
+                    genreOptions.push(genreObj);
                 }
-            })
+            });
         }
     }, []);
 
@@ -66,13 +55,20 @@ const AddMovie = () => {
         event.preventDefault();
         let oldData = JSON.parse(window.localStorage.getItem('movieData')) ?? [];
 
-        // Ensure trailer URL is in embed format
         let trailerUrl = inputs.trailer;
         if (trailerUrl.includes("watch?v=")) {
             trailerUrl = trailerUrl.replace("watch?v=", "embed/");
         }
 
-        const movieDetails = { ...inputs, trailer: trailerUrl, release_date: startDate, category: selectedCategory, genres: selectedGenres, additional_images: additionalImages };
+        const movieDetails = { 
+            ...inputs, 
+            trailer: trailerUrl, 
+            release_date: startDate, 
+            category: selectedCategory, 
+            genres: selectedGenres, 
+            additional_images: additionalImages,
+            existing_movies: selectedExistingMovies.map(movie => movie.value)
+        };
 
         if (editIndex !== null) {
             oldData[editIndex] = movieDetails;
@@ -90,6 +86,7 @@ const AddMovie = () => {
         setEditIndex(null);
         setSelectedCategory("");
         setSelectedGenres([]);
+        setSelectedExistingMovies([]);
     };
 
     const handleDelete = (index) => {
@@ -108,6 +105,7 @@ const AddMovie = () => {
         setShowModal(true);
         setSelectedCategory(movie.category || "");
         setSelectedGenres(movie.genres || []);
+        setSelectedExistingMovies(movie.existing_movies ? movie.existing_movies.map(movieName => ({ label: movieName, value: movieName })) : []);
     };
 
     let base64String = "";
@@ -144,136 +142,160 @@ const AddMovie = () => {
         });
     };
 
+    const movieOptions = movieData.map(movie => ({
+        label: movie.movie_name,
+        value: movie.movie_name
+    }));
+
     return (
         <div>
-            <div className='m-5'>
-                <Link to={'/'}><button>HomePage</button></Link>
-            </div>
-            <div className='m-5'>
-                <Link to={'/category'}><button>Language</button></Link>
-            </div>
-            <div className='m-5'>
-                <Link to={'/genre'}><button>Genre</button></Link>
-            </div>
-            <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@mdo" onClick={() => setShowModal(true)}>Add Movie</button>
-            {showModal && (
-                <div className="modal fade show" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-modal="true" role="dialog" style={{ display: 'block' }}>
-                    <div className="modal-dialog">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={() => { setShowModal(false); setEditIndex(null); setSelectedCategory(""); }}></button>
-                            </div>
-                            <div className="modal-body">
-                                <form onSubmit={handleSubmit} >
-                                    <div className="mb-3">
-                                        <label htmlFor="formFile" className="form-label">Movie Poster</label>
-                                        <input className="form-control" type="file" id="formFile" name='poster' onChange={imageUploaded} required={!imgData} />
-                                        <div className=''>
-                                            <img src={imgData} alt="" className='h-100px w-100px' />
+            <header className="bg-light py-3 mb-4">
+                <div className="container">
+                    <div className="d-flex justify-content-center">
+                        <Link to={'/'} className="btn btn-outline-primary mx-2">HomePage</Link>
+                        <Link to={'/category'} className="btn btn-outline-primary mx-2">Language</Link>
+                        <Link to={'/genre'} className="btn btn-outline-primary mx-2">Genre</Link>
+                    </div>
+                </div>
+            </header>
+
+            <div className="container">
+                <button type="button" className="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@mdo" onClick={() => setShowModal(true)}>Add Movie</button>
+                {showModal && (
+                    <div className="modal fade show" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-modal="true" role="dialog" style={{ display: 'block' }}>
+                        <div className="modal-dialog">
+                            <div className="modal-content">
+                                <div className="modal-header">
+                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={() => { setShowModal(false); setEditIndex(null); setSelectedCategory(""); }}></button>
+                                </div>
+                                <div className="modal-body">
+                                    <form onSubmit={handleSubmit} >
+                                        <div className="mb-3">
+                                            <label htmlFor="formFile" className="form-label">Movie Poster</label>
+                                            <input className="form-control" type="file" id="formFile" name='poster' onChange={imageUploaded} required={!imgData} />
+                                            <div className=''>
+                                                <img src={imgData} alt="" className='h-100px w-100px' />
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="mb-3">
-                                        <label htmlFor="additionalImages" className="form-label">Additional Images</label>
-                                        <input className="form-control" type="file" id="additionalImages" name='additionalImages' onChange={additionalImagesUploaded} multiple />
-                                        <div className=''>
-                                            {additionalImages.map((img, index) => (
-                                                <img key={index} src={img} alt="" className='h-100px w-100px' />
-                                            ))}
+                                        <div className="mb-3">
+                                            <label htmlFor="additionalImages" className="form-label">Additional Images</label>
+                                            <input className="form-control" type="file" id="additionalImages" name='additionalImages' onChange={additionalImagesUploaded} multiple />
+                                            <div className=''>
+                                                {additionalImages.map((img, index) => (
+                                                    <img key={index} src={img} alt="" className='h-100px w-100px' />
+                                                ))}
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="mb-3">
-                                        <label htmlFor="movie_name" className="form-label">Movie Name</label>
-                                        <input type="text" className="form-control" id="movie_name" name="movie_name" value={inputs.movie_name || ""} onChange={handleChange} required />
-                                    </div>
-                                    <div className="mb-3">
-                                        <label htmlFor="description" className="form-label">Description</label>
-                                        <textarea className="form-control" id="description" rows="3" name="description" value={inputs.description || ""} onChange={handleChange} required></textarea>
-                                    </div>
-                                    <div className="mb-3">
-                                        <label htmlFor="star_cast" className="form-label">Star Cast</label>
-                                        <input type="text" className="form-control" id="star_cast" name="star_cast" value={inputs.star_cast || ""} onChange={handleChange} required />
-                                    </div>
-                                    <div className="mb-3">
-                                        <label htmlFor="duration" className="form-label">Duration</label>
-                                        <input type="text" className="form-control" id="duration" name="duration" value={inputs.duration || ""} onChange={handleChange} required />
-                                    </div>
-                                    
-                                    <div className="mb-3">
-                                        <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} required />
-                                    </div>
-                                    <div className="mb-3">
-                                        <label htmlFor="category" className="form-label">Category</label>
-                                        <select className="form-control" id="category" value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} required>
-                                            <option value="">Select a category</option>
-                                            {categories.map((category, index) => (
-                                                <option key={index} value={category}>{category}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    
-                                    <div className='mb-3'>
-                                        <MultiSelect
-                                            options={genreOptions}
-                                            value={selectedGenres}
-                                            onChange={setSelectedGenres}
-                                            labelledBy="Select Genres"
-                                        />
-                                    </div>
-                                    <div className="mb-3">
-                                        <label htmlFor="trailer" className="form-label">Trailer Link</label>
-                                        <input type="text" className="form-control" id="trailer" name="trailer" value={inputs.trailer || ""} onChange={handleChange} required />
-                                    </div>
-                                    <button type='submit' className="btn btn-primary">Submit</button>
-                                </form>
+                                        <div className="mb-3">
+                                            <label htmlFor="movie_name" className="form-label">Movie Name</label>
+                                            <input type="text" className="form-control" id="movie_name" name="movie_name" value={inputs.movie_name || ""} onChange={handleChange} required />
+                                        </div>
+                                        <div className="mb-3">
+                                            <label htmlFor="description" className="form-label">Description</label>
+                                            <textarea className="form-control" id="description" rows="3" name="description" value={inputs.description || ""} onChange={handleChange} required></textarea>
+                                        </div>
+                                        <div className="mb-3">
+                                            <label htmlFor="star_cast" className="form-label">Star Cast</label>
+                                            <input type="text" className="form-control" id="star_cast" name="star_cast" value={inputs.star_cast || ""} onChange={handleChange} required />
+                                        </div>
+                                        <div className="mb-3">
+                                            <label htmlFor="duration" className="form-label">Duration</label>
+                                            <input type="text" className="form-control" id="duration" name="duration" value={inputs.duration || ""} onChange={handleChange} required />
+                                        </div>
+                                        
+                                        <div className="mb-3">
+                                            <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} required />
+                                        </div>
+                                        <div className="mb-3">
+                                            <label htmlFor="category" className="form-label">Language</label>
+                                            <select className="form-control" id="category" value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} required>
+                                                <option value="">Select a category</option>
+                                                {categories.map((category, index) => (
+                                                    <option key={index} value={category}>{category}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        
+                                        <div className='mb-3'>
+                                            <label htmlFor="category" className="form-label">Genres</label>
+                                            <MultiSelect
+                                                options={genreOptions}
+                                                value={selectedGenres}
+                                                onChange={setSelectedGenres}
+                                                labelledBy="Select Genres"
+                                            />
+                                        </div>
+
+                                        <div className="mb-3">
+                                            <label htmlFor="existingMovies" className="form-label">Related Movies</label>
+                                            <MultiSelect
+                                                options={movieOptions}
+                                                value={selectedExistingMovies}
+                                                onChange={setSelectedExistingMovies}
+                                                labelledBy="Select Existing Movies"
+                                            />
+                                        </div>
+
+                                        <div className="mb-3">
+                                            <label htmlFor="trailer" className="form-label">Trailer Link</label>
+                                            <input type="text" className="form-control" id="trailer" name="trailer" value={inputs.trailer || ""} onChange={handleChange} required />
+                                        </div>
+                                        <button type='submit' className="btn btn-primary">Submit</button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )}
 
-            <table className="table">
-                <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Poster</th>
-                        <th scope="col">Movie Name</th>
-                        <th scope="col">Description</th>
-                        <th scope="col">Release Date</th>
-                        <th scope="col">Star Cast</th>
-                        <th scope="col">Duration</th>
-                        <th scope="col">Language</th>
-                        <th scope="col">Genre</th>
-                        <th scope="col">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {movieData.length > 0 && movieData.map((movie, index) => {
-                        return (
-                            <tr key={index}>
-                                <th scope="row">{index + 1}</th>
-                                <td>
-                                    <div className="h-100px w-100px">
-                                        <img src={movie.poster} className="img-fluid rounded-start" alt={movie.movie_name} />
-                                    </div>
-                                </td>
-                                <td>{movie.movie_name}</td>
-                                <td>{movie.description}</td>
-                                <td>{new Date(movie.release_date).toLocaleDateString()}</td>
-                                <td>{movie.star_cast}</td>
-                                <td>{movie.duration}</td>
-                                <td>{movie.category}</td>
-                                <td>{movie.genres?.map((genre)=>{
-                                    return <div><span> {genre?.label} </span> <br /></div>
-                                })}</td>
-                                <td>
-                                    <button className="btn btn-danger" onClick={() => handleDelete(index)}>Delete</button>
-                                    <button className="btn btn-success" onClick={() => handleEdit(index)}>Edit</button>
-                                </td>
-                            </tr>
-                        )
-                    })}
-                </tbody>
-            </table>
+                <table className="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Poster</th>
+                            <th scope="col">Movie Name</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Release Date</th>
+                            <th scope="col">Star Cast</th>
+                            <th scope="col">Duration</th>
+                            <th scope="col">Language</th>
+                            <th scope="col">Genre</th>
+                            <th scope="col">Related Movies</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {movieData.length > 0 && movieData.map((movie, index) => {
+                            return (
+                                <tr key={index}>
+                                    <th scope="row">{index + 1}</th>
+                                    <td>
+                                        <div className="h-100px w-100px">
+                                            <img src={movie.poster} className="img-fluid rounded-start" alt={movie.movie_name} />
+                                        </div>
+                                    </td>
+                                    <td>{movie.movie_name}</td>
+                                    <td>{movie.description}</td>
+                                    <td>{new Date(movie.release_date).toLocaleDateString()}</td>
+                                    <td>{movie.star_cast}</td>
+                                    <td>{movie.duration}</td>
+                                    <td>{movie.category}</td>
+                                    <td>{movie.genres?.map((genre, index) => (
+                                        <div key={index}><span>{genre?.label}</span><br /></div>
+                                    ))}</td>
+                                    <td>{movie.existing_movies?.map((relatedMovie, index) => (
+                                        <div key={index}>{relatedMovie}</div>
+                                    ))}</td>
+                                    <td>
+                                        <button className="btn btn-danger" onClick={() => handleDelete(index)}>Delete</button>
+                                        <button className="btn btn-success" onClick={() => handleEdit(index)}>Edit</button>
+                                    </td>
+                                </tr>
+                            )
+                        })}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 }
