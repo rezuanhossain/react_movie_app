@@ -14,6 +14,8 @@ const MovieDetail = () => {
     const [relatedMovies, setRelatedMovies] = useState([]);
     const [activeTab, setActiveTab] = useState('info');
     const navigate = useNavigate();
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [visible, setVisible] = useState(false);
 
     useEffect(() => {
         const storedMovieData = JSON.parse(window.localStorage.getItem('movieData'));
@@ -64,7 +66,6 @@ const MovieDetail = () => {
         prevArrow: <PrevArrow />,
         nextArrow: <NextArrow />
     };
-
 
     
 
@@ -117,7 +118,10 @@ const MovieDetail = () => {
                             <img src={movie.poster} alt={movie.movie_name} className="img-fluid rounded-start mb-3" />
                             <br />
                             {movie.additional_images && movie.additional_images.map((image, index) => (
-                                <img key={index} src={image} alt={`Additional ${index}`} className="img-fluid rounded-start" />
+                                <img key={index} src={image} alt={`Additional ${index}`} className="img-fluid rounded-start" onClick={() => {
+                                    setVisible(true);
+                                    setCurrentIndex(index); // Update the current index
+                                }} />
                             ))}
                         </div>
                     )}
@@ -149,6 +153,15 @@ const MovieDetail = () => {
                             ))}
                         </Slider>
                     </div>
+                    <Viewer
+                        visible={visible}
+                        drag={false}
+                        rotatable={false}
+                        scalable={false}
+                        onClose={() => setVisible(false)}
+                        images={movie.additional_images.map((image) => ({ src: image, alt: "" }))}
+                        activeIndex={currentIndex} // Pass the current index to the Viewer component
+                    />
                 </div>
             )}
         </div>
