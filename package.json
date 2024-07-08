@@ -18,6 +18,8 @@
     "react-multi-select-component": "^4.3.4",
     "react-router-dom": "^6.23.1",
     "react-slick": "^0.30.2",
+    "react-viewer": "^3.2.2",
+    "slick-carousel": "^1.8.1",
     "write-json-file": "^5.0.0"
   },
   "devDependencies": {
