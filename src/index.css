@@ -67,5 +67,55 @@ button:focus-visible {
   }
 }
 
+body {
+  background-color: black; 
+}
+
+.card {
+  background-color: #333; 
+  color: white; 
+}
+
+.card-img-top {
+  width: 100%; 
+  height: 300px; 
+  object-fit: cover; 
+}
+
+.inner-container {
+  background-color: black; 
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.card {
+  width: 200px; 
+  height: 300px;
+  overflow: hidden; 
+}
+
+.card-img-top {
+  width: 100%;
+  height: 60%; 
+  object-fit: cover; 
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 40%; 
+}
+
+.card-title, .btn-primary {
+  color: white;
+  margin-bottom: 10px;
+}
+
+.btn-primary {
+  align-self: center; 
+}
+
+
 
 

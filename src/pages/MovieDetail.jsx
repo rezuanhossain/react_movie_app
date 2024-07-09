@@ -7,7 +7,6 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Viewer from 'react-viewer';
 
-
 const MovieDetail = () => {
     const { movieId } = useParams();
     const [movie, setMovie] = useState(null);
@@ -32,7 +31,6 @@ const MovieDetail = () => {
         }
     }, [movieId]);
 
-    /* Carousel work */
     const PrevArrow = (props) => {
         const { className, style, onClick } = props;
         return (
@@ -67,14 +65,12 @@ const MovieDetail = () => {
         nextArrow: <NextArrow />
     };
 
-    
-
     return (
         <div>
             <button onClick={() => navigate('/')} className="btn btn-warning fw-bold mb-3">Homepage</button>
 
             {movie && (
-                <div>
+                <div className="text-white">
                     <div className="tab-buttons">
                         <button onClick={() => setActiveTab('info')} className="btn btn-primary mx-1">Info</button>
                         <button onClick={() => setActiveTab('trailer')} className="btn btn-primary mx-1">Trailer</button>
@@ -120,7 +116,7 @@ const MovieDetail = () => {
                             {movie.additional_images && movie.additional_images.map((image, index) => (
                                 <img key={index} src={image} alt={`Additional ${index}`} className="img-fluid rounded-start" onClick={() => {
                                     setVisible(true);
-                                    setCurrentIndex(index); // Update the current index
+                                    setCurrentIndex(index);
                                 }} />
                             ))}
                         </div>
@@ -160,7 +156,7 @@ const MovieDetail = () => {
                         scalable={false}
                         onClose={() => setVisible(false)}
                         images={movie.additional_images.map((image) => ({ src: image, alt: "" }))}
-                        activeIndex={currentIndex} // Pass the current index to the Viewer component
+                        activeIndex={currentIndex}
                     />
                 </div>
             )}
