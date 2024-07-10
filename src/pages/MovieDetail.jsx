@@ -59,14 +59,14 @@ const MovieDetail = () => {
         autoplay: true,
         speed: 500,
         autoplaySpeed: 2000,
-        slidesToShow: 3,
+        slidesToShow: 5,
         slidesToScroll: 1,
         prevArrow: <PrevArrow />,
         nextArrow: <NextArrow />
     };
 
     return (
-        <div>
+        <div style={{ backgroundColor: 'DarkSlateGray' }}>
             <button onClick={() => navigate('/')} className="btn btn-warning fw-bold mb-3">Homepage</button>
 
             {movie && (
@@ -111,14 +111,18 @@ const MovieDetail = () => {
                     {activeTab === 'gallery' && (
                         <div>
                             <h1>{movie.movie_name}</h1>
+                            
                             <img src={movie.poster} alt={movie.movie_name} className="img-fluid rounded-start mb-3" />
+                            
                             <br />
+                            <div className='card'>  
                             {movie.additional_images && movie.additional_images.map((image, index) => (
                                 <img key={index} src={image} alt={`Additional ${index}`} className="img-fluid rounded-start" onClick={() => {
                                     setVisible(true);
                                     setCurrentIndex(index);
                                 }} />
                             ))}
+                            </div>
                         </div>
                     )}
 

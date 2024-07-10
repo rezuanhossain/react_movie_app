@@ -15,7 +15,7 @@ const Home = () => {
 
   return (
     <div className="outer-container">
-      <div className="row row-cols-4 g-3 inner-container">
+      <div className="row row-cols- g-3 inner-container">
         {movieData.length > 0 && movieData.map((movie, index) => (
           <div className="col" key={index}>
             <div className="card">
