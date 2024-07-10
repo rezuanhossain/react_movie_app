@@ -15,14 +15,14 @@ const Home = () => {
 
   return (
     <div className="outer-container">
-      <div className="row row-cols- g-3 inner-container">
+      <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3 inner-container">
         {movieData.length > 0 && movieData.map((movie, index) => (
           <div className="col" key={index}>
             <div className="card">
               <img src={movie.poster} className="card-img-top" alt="Poster" />
               <div className="card-body">
                 <h5 className="card-title">{movie.movie_name}</h5>
-                <Link to={`/movies/${index}`} className="btn btn-primary">View Details</Link>
+                <Link to={`/movies/${index}`} className="btn btn-primary">Read More</Link>
               </div>
             </div>
           </div>

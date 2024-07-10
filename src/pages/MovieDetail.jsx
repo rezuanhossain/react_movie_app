@@ -138,7 +138,7 @@ const MovieDetail = () => {
                     )}
 
                     <div className="mt-4">
-                        <h3>Related Movies</h3>
+                        <h3 className='text-warning'>Related Movies</h3>
                         <Slider {...settings}>
                             {relatedMovies && relatedMovies.map((relatedMovie, index) => (
                                 <div key={index} className="p-2">
