@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
@@ -22,7 +23,7 @@ const MovieDetail = () => {
             setMovie(storedMovieData[movieId]);
             if (storedMovieData[movieId] && storedMovieData[movieId].related_movies) {
                 const relatedMoviesData = storedMovieData[movieId].related_movies.map(movieName => {
-                    return storedMovieData.find(movie => movie.movie_name === movieName.label);
+                    return storedMovieData.find((movie,index) => index == movieName.value);
                 });
                 setRelatedMovies(relatedMoviesData);
             } else {
@@ -59,112 +60,122 @@ const MovieDetail = () => {
         autoplay: true,
         speed: 500,
         autoplaySpeed: 2000,
-        slidesToShow: 5,
+        slidesToShow: 3,
         slidesToScroll: 1,
         prevArrow: <PrevArrow />,
         nextArrow: <NextArrow />
     };
 
+    
     return (
-        <div style={{ backgroundColor: 'DarkSlateGray' }}>
-            <button onClick={() => navigate('/')} className="btn btn-warning fw-bold mb-3">Homepage</button>
+        <div>
+            <div className='mb-5'>
+                <h1 className='text-danger'>MediaManager</h1>
+                <form className="d-flex">
+                    <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
+                    <button className="btn btn-outline-success" type="submit">Search</button>
+                </form>
+            </div>
+            <div style={{ backgroundColor: 'DarkSlateGray' }}>
+                <button onClick={() => navigate('/')} className="btn btn-warning fw-bold m-3">Homepage</button>
 
-            {movie && (
-                <div className="text-white">
-                    <div className="tab-buttons">
-                        <button onClick={() => setActiveTab('info')} className="btn btn-primary mx-1">Info</button>
-                        <button onClick={() => setActiveTab('trailer')} className="btn btn-primary mx-1">Trailer</button>
-                        <button onClick={() => setActiveTab('gallery')} className="btn btn-primary mx-1">Gallery</button>
-                        <button onClick={() => setActiveTab('link')} className="btn btn-primary mx-1">Link</button>
-                    </div>
-
-                    {activeTab === 'info' && (
-                        <div>
-                            <h1>{movie.movie_name}</h1>
-                            <img src={movie.poster} alt={movie.movie_name} className="img-fluid rounded-start" />
-                            <p>{movie.description}</p>
-                            <p>Release Date: {new Date(movie.release_date).toLocaleDateString()}</p>
-                            <p>Star Cast: {movie.star_cast}</p>
-                            <p>Duration: {movie.duration}</p>
-                            <p>Category: {movie.category}</p>
-                            <p>Genre: {movie.genres.map((genre) => genre.label).join(', ')}</p>
+                {movie && (
+                    <div className="text-white">
+                        <div className="tab-buttons">
+                            <button onClick={() => setActiveTab('info')} className="fw-bold btn btn-primary  mx-1">Info</button>
+                            <button onClick={() => setActiveTab('trailer')} className="fw-bold btn btn-primary mx-1">Trailer</button>
+                            <button onClick={() => setActiveTab('gallery')} className="fw-bold btn btn-primary mx-1">Gallery</button>
+                            <button onClick={() => setActiveTab('link')} className="fw-bold btn btn-primary mx-1">Link</button>
                         </div>
-                    )}
 
-                    {activeTab === 'trailer' && (
-                        <div>
-                            <h1>{movie.movie_name}</h1>
-                            <img src={movie.poster} alt={movie.movie_name} className="img-fluid rounded-start mb-3" />
-                            <br />
-                            <iframe
-                                width="560"
-                                height="315"
-                                src={movie.trailer}
-                                title="Movie Trailer"
-                                frameBorder="0"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowFullScreen
-                            ></iframe>
-                        </div>
-                    )}
-
-                    {activeTab === 'gallery' && (
-                        <div>
-                            <h1>{movie.movie_name}</h1>
-                            
-                            <img src={movie.poster} alt={movie.movie_name} className="img-fluid rounded-start mb-3" />
-                            
-                            <br />
-                            <div className='card'>  
-                            {movie.additional_images && movie.additional_images.map((image, index) => (
-                                <img key={index} src={image} alt={`Additional ${index}`} className="img-fluid rounded-start" onClick={() => {
-                                    setVisible(true);
-                                    setCurrentIndex(index);
-                                }} />
-                            ))}
+                        {activeTab === 'info' && (
+                            <div>
+                                <h1>{movie.movie_name}</h1>
+                                <img src={movie?.poster} alt={movie.movie_name} className="img-fluid rounded-start mb-4" />
+                                <p className='text-warning'>{movie.description}</p>
+                                <p>Release Date: {new Date(movie.release_date).toLocaleDateString()}</p>
+                                <p>Star Cast: {movie.star_cast}</p>
+                                <p>Duration: {movie.duration}</p>
+                                <p>Category: {movie.category}</p>
+                                <p>Genre: {movie.genres.map((genre) => genre.label).join(', ')}</p>
                             </div>
-                        </div>
-                    )}
+                        )}
 
-                    {activeTab === 'link' && (
-                        <div>
-                            <h1>{movie.movie_name}</h1>
-                            <img src={movie.poster} alt={movie.movie_name} className="img-fluid rounded-start mb-3" />
-                            <br />
-                            {movie.links && movie.links.map((link, index) => (
-                                <p key={index}><a href={link.url} target="_blank" rel="noopener noreferrer">{link.label}</a></p>
-                            ))}
-                        </div>
-                    )}
+                        {activeTab === 'trailer' && (
+                            <div>
+                                <h1>{movie.movie_name}</h1>
+                                <img src={movie?.poster} alt={movie.movie_name} className="img-fluid rounded-start mb-3" />
+                                <br />
+                                <iframe
+                                    width="560"
+                                    height="315"
+                                    src={movie.trailer}
+                                    title="Movie Trailer"
+                                    frameBorder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                ></iframe>
+                            </div>
+                        )}
 
-                    <div className="mt-4">
-                        <h3 className='text-warning'>Related Movies</h3>
-                        <Slider {...settings}>
-                            {relatedMovies && relatedMovies.map((relatedMovie, index) => (
-                                <div key={index} className="p-2">
+                        {activeTab === 'gallery' && (
+                            <div>
+                                <h1>{movie.movie_name}</h1>
+                                
+                                <img src={movie?.poster} alt={movie.movie_name} className="img-fluid rounded-start mb-3" />
+                                
+                                <br />
+                                <div className='card'>  
+                                {movie.additional_images && movie.additional_images.map((image, index) => (
+                                    <img key={index} src={image} alt={`Additional ${index}`} className="img-fluid rounded-start" onClick={() => {
+                                        setVisible(true);
+                                        setCurrentIndex(index);
+                                    }} />
+                                ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'link' && (
+                            <div>
+                                <h1>{movie.movie_name}</h1>
+                                <img src={movie?.poster} alt={movie.movie_name} className="img-fluid rounded-start mb-3" />
+                                <br />
+                                {movie.links && movie.links.map((link, index) => (
+                                    <p key={index}><a href={link.url} target="_blank" rel="noopener noreferrer">{link.label}</a></p>
+                                ))}
+                            </div>
+                        )}
+
+                        <div className="mt-4">
+                            <h3 className='text-warning'>Related Movies</h3>
+                            <Slider {...settings}>
+                                {relatedMovies && relatedMovies?.map((relatedMovie, index) => (
+                                    <div key={index} className="p-2">
                                     <div className="card">
-                                        <img src={relatedMovie.poster} className="card-img-top" alt={relatedMovie.movie_name} />
+                                        <img src={relatedMovie?.poster} className="card-img-top" alt={relatedMovie.movie_name} />
                                         <div className="card-body">
-                                            <h5 className="card-title">{relatedMovie.movie_name}</h5>
+                                            <h5 className="card-title">{relatedMovie?.movie_name}</h5>
                                         </div>
-                                        <Link to={`/movies/${relatedMovie.id}`} className="btn btn-primary">View Details</Link>
+                                        <Link to={`/movies/${index}`} className="btn btn-primary">View Details</Link>
                                     </div>
                                 </div>
-                            ))}
-                        </Slider>
+                                ))}
+                            </Slider>
+                        </div>
+                        <Viewer
+                            visible={visible}
+                            drag={false}
+                            rotatable={false}
+                            scalable={false}
+                            onClose={() => setVisible(false)}
+                            images={movie.additional_images.map((image) => ({ src: image, alt: "" }))}
+                            activeIndex={currentIndex}
+                        />
                     </div>
-                    <Viewer
-                        visible={visible}
-                        drag={false}
-                        rotatable={false}
-                        scalable={false}
-                        onClose={() => setVisible(false)}
-                        images={movie.additional_images.map((image) => ({ src: image, alt: "" }))}
-                        activeIndex={currentIndex}
-                    />
-                </div>
-            )}
-        </div>
+                )}
+            </div>
+            </div>
     );
 };
 
