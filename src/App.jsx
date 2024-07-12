@@ -7,6 +7,7 @@ import MovieDetail from './pages/MovieDetail.jsx';
 import CategoryPage from './components/Category.jsx';
 import GenrePage from './pages/GenrePage.jsx';
 import Navbar from './pages/Navbar.jsx';
+import Footer from './pages/Footer.jsx';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/category" element={<CategoryPage />} /> 
           <Route path="/genre" element={<GenrePage />} /> 
         </Routes>
+      <Footer />
       </BrowserRouter>
     </>
   );
