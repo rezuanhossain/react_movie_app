@@ -15,9 +15,6 @@ const Home = () => {
 
   return (
     <div>
-      <div className='mb-5'>
-        <h1 className='text-danger'>MediaManager</h1>
-      </div>
       <div className="outer-container">
         <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-4 g-3 inner-container">
           {movieData.length > 0 && movieData.map((movie, index) => (
