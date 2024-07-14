@@ -84,7 +84,7 @@ const MovieDetail = () => {
                             <div>
                                 <h1>{movie.movie_name}</h1>
                                 <img src={movie?.poster} alt={movie.movie_name} className="img-fluid rounded-start mb-4" />
-                                <p className='text-warning'>{movie.description}</p>
+                                <p className='text-warning m-2'>{movie.description}</p>
                                 <p>Release Date: {new Date(movie.release_date).toLocaleDateString()}</p>
                                 <p>Star Cast: {movie.star_cast}</p>
                                 <p>Duration: {movie.duration}</p>
@@ -112,12 +112,11 @@ const MovieDetail = () => {
 
                         {activeTab === 'gallery' && (
                             <div>
-                                <h1>{movie.movie_name}</h1>
-                                
+                                <h1>{movie.movie_name}</h1>                               
                                 <img src={movie?.poster} alt={movie.movie_name} className="img-fluid rounded-start mb-3" />
-                                
                                 <br />
                                 <div className='card'>  
+                                    <h3 className='mb-3'>Screenshots</h3>
                                 {movie.additional_images && movie.additional_images.map((image, index) => (
                                     <img key={index} src={image} alt={`Additional ${index}`} className="img-fluid rounded-start" onClick={() => {
                                         setVisible(true);

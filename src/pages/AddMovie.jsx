@@ -155,12 +155,12 @@ const AddMovie = () => {
 
     return (
         <div>
-            <header className="bg-light py-3 mb-4">
+            <header className="bg-warning py-3 mb-4">
                 <div className="container">
                     <div className="d-flex justify-content-center">
-                        <Link to={'/'} className="btn btn-outline-primary mx-2">HomePage</Link>
-                        <Link to={'/category'} className="btn btn-outline-primary mx-2">Language</Link>
-                        <Link to={'/genre'} className="btn btn-outline-primary mx-2">Genre</Link>
+                        <Link to={'/'} className="bg-secondary btn btn-dark mx-2">HomePage</Link>
+                        <Link to={'/category'} className="bg-secondary btn btn-dark mx-2">Language</Link>
+                        <Link to={'/genre'} className="bg-secondary btn btn-dark mx-2">Genre</Link>
                     </div>
                 </div>
             </header>

@@ -174,3 +174,20 @@ body {
 .navbar-right .form-control {
   width: 200px;
 }
+
+.footer .social-icons {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.footer .social-icons a {
+  color: white;
+  margin-left: 15px;
+  font-size: 1.5em;
+  transition: color 0.3s;
+}
+
+.footer .social-icons a:hover {
+  color: #646cff; 
+}
