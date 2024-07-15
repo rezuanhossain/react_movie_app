@@ -79,7 +79,7 @@ const MovieDetail = () => {
                             <button onClick={() => setActiveTab('gallery')} className="fw-bold btn btn-primary mx-1">Gallery</button>
                             <button onClick={() => setActiveTab('link')} className="fw-bold btn btn-primary mx-1">Link</button>
                         </div>
-
+                        
                         {activeTab === 'info' && (
                             <div>
                                 <h1>{movie.movie_name}</h1>
@@ -166,7 +166,7 @@ const MovieDetail = () => {
                     </div>
                 )}
             </div>
-            </div>
+        </div>
     );
 };
 
