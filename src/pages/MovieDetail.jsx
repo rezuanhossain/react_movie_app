@@ -110,6 +110,7 @@ const MovieDetail = () => {
                             </div>
                         )}
 
+
                         {activeTab === 'gallery' && (
                             <div>
                                 <h1>{movie.movie_name}</h1>                               

@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -61,42 +62,51 @@ const AddMovie = () => {
     };
 
     const handleSubmit = (event) => {
-        event.preventDefault();
-        let oldData = JSON.parse(window.localStorage.getItem('movieData')) ?? [];
+    event.preventDefault();
+    let oldData = JSON.parse(window.localStorage.getItem('movieData')) ?? [];
 
-        let trailerUrl = inputs.trailer;
-        if (trailerUrl.includes("watch?v=")) {
-            trailerUrl = trailerUrl.replace("watch?v=", "embed/");
-        }
-
-        const movieDetails = { 
-            ...inputs, 
-            trailer: trailerUrl, 
-            release_date: startDate, 
-            category: selectedCategory, 
-            genres: selectedGenres, 
-            additional_images: additionalImages,
-            related_movies: selectedRelatedMovies
-        };
-
-        if (editIndex !== null) {
-            oldData[editIndex] = movieDetails;
-        } else {
-            oldData = [...oldData, movieDetails];
-        }
-
-        window.localStorage.setItem('movieData', JSON.stringify(oldData));
-        setMovieData(oldData);
-        setInputs({});
-        setImgData(null);
-        setAdditionalImages([]);
-        setStartDate(new Date());
-        setShowModal(false);
-        setEditIndex(null);
-        setSelectedCategory("");
-        setSelectedGenres([]);
-        setSelectedRelatedMovies([]);
+    let trailerUrl = inputs.trailer;
+    
+    const extractVideoId = (url) => {
+        const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+        const matches = url.match(regex);
+        return matches ? matches[1] : null;
     };
+
+    const videoId = extractVideoId(trailerUrl);
+    if (videoId) {
+        trailerUrl = `https://www.youtube.com/embed/${videoId}`;
+    }
+
+    const movieDetails = {
+        ...inputs,
+        trailer: trailerUrl,
+        release_date: startDate,
+        category: selectedCategory,
+        genres: selectedGenres,
+        additional_images: additionalImages,
+        related_movies: selectedRelatedMovies
+    };
+
+    if (editIndex !== null) {
+        oldData[editIndex] = movieDetails;
+    } else {
+        oldData = [...oldData, movieDetails];
+    }
+
+    window.localStorage.setItem('movieData', JSON.stringify(oldData));
+    setMovieData(oldData);
+    setInputs({});
+    setImgData(null);
+    setAdditionalImages([]);
+    setStartDate(new Date());
+    setShowModal(false);
+    setEditIndex(null);
+    setSelectedCategory("");
+    setSelectedGenres([]);
+    setSelectedRelatedMovies([]);
+};
+
 
     const handleDelete = (index) => {
         const deletedData = movieData.filter((_, i) => i !== index);
