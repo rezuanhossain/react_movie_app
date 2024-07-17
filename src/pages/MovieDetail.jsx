@@ -119,6 +119,7 @@ const MovieDetail = () => {
                                 <br />
                                 <div className='card'>
                                     <h3 className='mb-3'>Screenshots</h3>
+                                    <hr />
                                     {movie.additional_images && movie.additional_images.map((image, index) => (
                                         <img 
                                             key={index} 

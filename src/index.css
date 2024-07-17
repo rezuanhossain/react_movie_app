@@ -70,7 +70,7 @@ body {
 }
 
 .outer-container {
-  background-color: rgb(28, 163, 89); 
+  background-color: rgb(248, 149, 0); 
 }
 
 .inner-container {
@@ -98,7 +98,7 @@ body {
 }
 
 .card-title, .btn-primary {
-  color: white;
+  color: rgba(255, 255, 255, 0.979);
 }
 
 .btn-primary {
