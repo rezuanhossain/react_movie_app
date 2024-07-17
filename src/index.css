@@ -155,7 +155,6 @@ body {
   }
 }
 
-
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -190,4 +189,12 @@ body {
 
 .footer .social-icons a:hover {
   color: #646cff; 
+}
+
+.smaller-image {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 1000px;
+  height: auto; 
 }

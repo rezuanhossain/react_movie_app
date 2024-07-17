@@ -20,7 +20,7 @@ const Home = () => {
           {movieData.length > 0 && movieData.map((movie, index) => (
             <div className="col" key={index}>
               <div className="card">
-                <img src={movie.poster} className="card-img-top" alt="Poster" />
+                <img src={movie.poster} className="card-img-top rounded-2" alt="Poster" />
                 <div className="card-body">
                   <h5 className="card-title">{movie.movie_name}</h5>
                   <Link to={`/movies/${index}`} className="btn btn-primary">Read More</Link>

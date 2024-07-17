@@ -83,7 +83,7 @@ const MovieDetail = () => {
                         {activeTab === 'info' && (
                             <div>
                                 <h1>{movie.movie_name}</h1>
-                                <img src={movie?.poster} alt={movie.movie_name} className="img-fluid rounded-start mb-4" />
+                                <img src={movie?.poster} alt={movie.movie_name} className="img-fluid rounded-2 mb-4" />
                                 <p className='text-warning m-2'>{movie.description}</p>
                                 <p>Release Date: {new Date(movie.release_date).toLocaleDateString()}</p>
                                 <p>Star Cast: {movie.star_cast}</p>
@@ -96,7 +96,7 @@ const MovieDetail = () => {
                         {activeTab === 'trailer' && (
                             <div>
                                 <h1>{movie.movie_name}</h1>
-                                <img src={movie?.poster} alt={movie.movie_name} className="img-fluid rounded-start mb-3" />
+                                <img src={movie?.poster} alt={movie.movie_name} className="img-fluid rounded-2 mb-3" />
                                 <br />
                                 <iframe
                                     width="560"
@@ -114,16 +114,22 @@ const MovieDetail = () => {
                         {activeTab === 'gallery' && (
                             <div>
                                 <h1>{movie.movie_name}</h1>                               
-                                <img src={movie?.poster} alt={movie.movie_name} className="img-fluid rounded-start mb-3" />
+                                <img src={movie?.poster} alt={movie.movie_name} className="img-fluid rounded-2 mb-3" />
                                 <br />
-                                <div className='card'>  
+                                <div className='card'>
                                     <h3 className='mb-3'>Screenshots</h3>
-                                {movie.additional_images && movie.additional_images.map((image, index) => (
-                                    <img key={index} src={image} alt={`Additional ${index}`} className="img-fluid rounded-start" onClick={() => {
-                                        setVisible(true);
-                                        setCurrentIndex(index);
-                                    }} />
-                                ))}
+                                    {movie.additional_images && movie.additional_images.map((image, index) => (
+                                        <img 
+                                            key={index} 
+                                            src={image} 
+                                            alt={`Additional ${index}`} 
+                                            className="img-fluid rounded-2 mb-3 smaller-image" 
+                                            onClick={() => {
+                                                setVisible(true);
+                                                setCurrentIndex(index);
+                                            }} 
+                                        />
+                                    ))}
                                 </div>
                             </div>
                         )}
@@ -131,7 +137,7 @@ const MovieDetail = () => {
                         {activeTab === 'link' && (
                             <div>
                                 <h1>{movie.movie_name}</h1>
-                                <img src={movie?.poster} alt={movie.movie_name} className="img-fluid rounded-start mb-3" />
+                                <img src={movie?.poster} alt={movie.movie_name} className="img-fluid rounded-2 mb-3" />
                                 <br />
                                 {movie.links && movie.links.map((link, index) => (
                                     <p key={index}><a href={link.url} target="_blank" rel="noopener noreferrer">{link.label}</a></p>
