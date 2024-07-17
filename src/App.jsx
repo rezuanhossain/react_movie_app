@@ -8,12 +8,13 @@ import CategoryPage from './components/Category.jsx';
 import GenrePage from './pages/GenrePage.jsx';
 import Navbar from './pages/Navbar.jsx';
 import Footer from './pages/Footer.jsx';
+import ScrollToTop from './components/ScrollToTop.jsx';
 
 function App() {
   return (
     <>
       <BrowserRouter>
-      <Navbar />
+        <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/movies/:movieId" element={<MovieDetail />} />
@@ -21,7 +22,8 @@ function App() {
           <Route path="/category" element={<CategoryPage />} /> 
           <Route path="/genre" element={<GenrePage />} /> 
         </Routes>
-      <Footer />
+        <ScrollToTop /> 
+        <Footer />
       </BrowserRouter>
     </>
   );
