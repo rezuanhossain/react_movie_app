@@ -83,7 +83,8 @@ const MovieDetail = () => {
                         {activeTab === 'info' && (
                             <div>
                                 <h1>{movie.movie_name}</h1>
-                                <img src={movie?.poster} alt={movie.movie_name} className="img-fluid rounded-2 mb-4" />
+                                <img src={movie?.poster} alt={movie.movie_name} className="img-fluid rounded-2 mb-4 image-border-line" />
+                                <hr className='info-line'/>
                                 <p className='text-warning m-2'>{movie.description}</p>
                                 <p>Release Date: {new Date(movie.release_date).toLocaleDateString()}</p>
                                 <p>Star Cast: {movie.star_cast}</p>
@@ -144,9 +145,12 @@ const MovieDetail = () => {
                                 ))}
                             </div>
                         )}
-
+                        
                         <div className="mt-4">
-                            <h3 className='text-warning'>Related Movies</h3>
+                            <div>
+                                <hr className='info-line'/>
+                            </div>
+                            <h3 className='text-danger'>Related Movies</h3>
                             <Slider {...settings}>
                                 {relatedMovies && relatedMovies?.map((relatedMovie, index) => (
                                     <div key={index} className="p-2">

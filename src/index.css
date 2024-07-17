@@ -199,7 +199,8 @@ body {
   height: auto; 
 }
 
-/* index.css */
+/* scrolltotop.css */
+
 .scroll-to-top {
   position: fixed;
   bottom: 20px;
@@ -208,8 +209,8 @@ body {
 }
 
 .scroll-button {
-  background-color: #00f15d;
-  color: white;
+  background-color: #ff0606;
+  color: rgb(8, 8, 8);
   border: none;
   border-radius: 50%;
   padding: 10px 15px;
@@ -222,3 +223,12 @@ body {
 .scroll-button:hover {
   background-color: #0056b3;
 }
+
+/* Info Border */
+
+.info-line {
+  border: none;
+  border-top: 40px solid rgba(239, 255, 9, 0.979); 
+  margin: 10px 0; 
+}
+
