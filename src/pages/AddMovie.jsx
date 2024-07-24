@@ -8,6 +8,7 @@ import '../App.css';
 import { Link } from "react-router-dom";
 import { MultiSelect } from "react-multi-select-component";
 
+
 const genreOptions = [];
 const movieOptions = [];
 
@@ -165,6 +166,7 @@ const AddMovie = () => {
 
     return (
         <div>
+            
             <header className="bg-warning py-3 mb-4">
                 <div className="container">
                     <div className="d-flex justify-content-center">

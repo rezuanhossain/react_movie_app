@@ -8,6 +8,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Viewer from 'react-viewer';
 
+
 const MovieDetail = () => {
     const { movieId } = useParams();
     const [movie, setMovie] = useState(null);
@@ -68,6 +69,7 @@ const MovieDetail = () => {
        
     return (
         <div>
+            
             <div style={{ backgroundColor: 'DarkSlateGray' }}>
                 <button onClick={() => navigate('/')} className="btn btn-warning fw-bold m-3">Homepage</button>
 

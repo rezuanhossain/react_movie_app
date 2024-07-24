@@ -9,6 +9,7 @@ import GenrePage from './pages/GenrePage.jsx';
 import Navbar from './pages/Navbar.jsx';
 import Footer from './pages/Footer.jsx';
 import ScrollToTop from './components/ScrollToTop.jsx';
+import SearchResults from './components/SearchResults.jsx';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/admin" element={<AddMovie />} />
           <Route path="/category" element={<CategoryPage />} /> 
           <Route path="/genre" element={<GenrePage />} /> 
+          <Route path="/search/:searchTerm" element={<SearchResults />} />
         </Routes>
         <ScrollToTop /> 
         <Footer />
