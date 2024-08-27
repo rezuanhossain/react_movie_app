@@ -1,3 +1,4 @@
+/* eslint-disable no-irregular-whitespace */
 import axios from 'axios';
 
 const api = axios.create({

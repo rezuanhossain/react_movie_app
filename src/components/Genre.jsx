@@ -1,3 +1,4 @@
+/* eslint-disable no-irregular-whitespace */
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import callApi from '../api/api'
@@ -13,7 +14,7 @@ const GenreForm = () => {
   //   }
   // }, []);
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchGenre = async () => {
       try {
         const response = await callApi.get('/genres/get-all-genres');
         console.log(response)
@@ -23,23 +24,44 @@ const GenreForm = () => {
       }
     };
   
-    fetchCategories();
+    fetchGenre();
   }, []);
 
-  const handleAddGenre = () => {
+  // const handleAddGenre = () => {
+  //   if (newGenre !== "") {
+  //     const updatedGenres = [...genres, newGenre];
+  //     setGenres(updatedGenres);
+  //     window.localStorage.setItem('genres', JSON.stringify(updatedGenres));
+  //     setNewGenre("");
+  //   }
+  // };
+  const handleAddGenre = async () => {
     if (newGenre !== "") {
-      const updatedGenres = [...genres, newGenre];
-      setGenres(updatedGenres);
-      window.localStorage.setItem('genres', JSON.stringify(updatedGenres));
-      setNewGenre("");
+      try {
+        const response = await callApi.post('/genres', { name: newGenre });
+        const updatedGenres = [...genres, response.data.genre];
+        setGenres(updatedGenres);
+        setNewGenre("");
+      } catch (error) {
+        console.error('Error adding genre:', error);
+      }
     }
   };
 
-  const handleDeleteGenre = (index) => {
-    const updatedGenres = genres.filter((_, i) => i !== index);
-    setGenres(updatedGenres);
-    window.localStorage.setItem('genres', JSON.stringify(updatedGenres));
-  };
+  // const handleDeleteGenre = (index) => {
+  //   const updatedGenres = genres.filter((_, i) => i !== index);
+  //   setGenres(updatedGenres);
+  //   window.localStorage.setItem('genres', JSON.stringify(updatedGenres));
+  // };
+  const handleDeleteGenre = async (id) => {
+    try {
+      await callApi.post('/genres/destroy', { id : id });
+      const updatedGenres = genres.filter(genre => genre.id !== id);
+      setGenres(updatedGenres);
+    } catch (error) {
+      console.error('Error deleting genre:', error);
+    }
+  };
 
   return (
     <div>
