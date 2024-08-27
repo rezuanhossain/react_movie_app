@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable no-useless-escape */
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
@@ -7,6 +8,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import '../App.css';
 import { Link } from "react-router-dom";
 import { MultiSelect } from "react-multi-select-component";
+import callApi from '../api/api'
 
 
 const genreOptions = [];
@@ -25,36 +27,52 @@ const AddMovie = () => {
     const [selectedGenres, setSelectedGenres] = useState([]);
     const [selectedRelatedMovies, setSelectedRelatedMovies] = useState([]);
 
-    useEffect(() => {
-        const storedMovieData = JSON.parse(window.localStorage.getItem('movieData'));
-        if (storedMovieData) {
-            setMovieData(storedMovieData);
-            storedMovieData.map((movie,index) => {
-                let movieObj = {
-                    label: movie.movie_name, 
-                    value: index
-                }
-                movieOptions.push(movieObj);
-            });
-        }
+    // useEffect(() => {
+    //     const storedMovieData = JSON.parse(window.localStorage.getItem('movieData'));
+    //     if (storedMovieData) {
+    //         setMovieData(storedMovieData);
+    //         storedMovieData.map((movie,index) => {
+    //             let movieObj = {
+    //                 label: movie.movie_name, 
+    //                 value: index
+    //             }
+    //             movieOptions.push(movieObj);
+    //         });
+    //     }
 
-        const storedCategories = JSON.parse(window.localStorage.getItem('categories'));
-        if (storedCategories) {
-            setCategories(storedCategories);
-        }
-        const storedGenres = JSON.parse(window.localStorage.getItem('genres'));
-        if (storedGenres) {
-            storedGenres.map((genre) => {
-                if (!genreOptions.find(item => item.value === genre)) {
-                    let genreObj = {
-                        label: genre, 
-                        value: genre
-                    }
-                    genreOptions.push(genreObj);
-                }
-            });
-        }
-    }, []);
+    //     const storedCategories = JSON.parse(window.localStorage.getItem('categories'));
+    //     if (storedCategories) {
+    //         setCategories(storedCategories);
+    //     }
+    //     const storedGenres = JSON.parse(window.localStorage.getItem('genres'));
+    //     if (storedGenres) {
+    //         storedGenres.map((genre) => {
+    //             if (!genreOptions.find(item => item.value === genre)) {
+    //                 let genreObj = {
+    //                     label: genre, 
+    //                     value: genre
+    //                 }
+    //                 genreOptions.push(genreObj);
+    //             }
+    //         });
+    //     }
+    // }, []);
+
+    useEffect(() => {
+        const fetchAddMovie = async () => {
+          try {
+            const response = await callApi.get('/movies/get-all-movies');
+            console.log(response)
+         
+            setMovieData(response.data.movies);
+            
+          } catch (error) {
+            console.error('Error fetching genres:', error);
+          }
+        };
+      
+        fetchAddMovie();
+      }, []);
 
     const handleChange = (event) => {
         const name = event.target.name;
@@ -292,21 +310,21 @@ const AddMovie = () => {
                                     <th scope="row">{index + 1}</th>
                                     <td>
                                         <div className="h-100px w-100px">
-                                            <img src={movie.poster} className="img-fluid rounded-start" alt={movie.movie_name} />
+                                            <img src={`http://localhost:8000${movie.thumbnail_img}`} className="img-fluid rounded-start" alt={movie.name} />
                                         </div>
                                     </td>
-                                    <td>{movie.movie_name}</td>
+                                    <td>{movie.name}</td>
                                     <td>{movie.description}</td>
                                     <td>{new Date(movie.release_date).toLocaleDateString()}</td>
-                                    <td>{movie.star_cast}</td>
-                                    <td>{movie.duration}</td>
-                                    <td>{movie.category}</td>
-                                    <td>{movie.genres?.map((genre, index) => (
+                                    <td>{movie.star_casts}</td>
+                                    <td>{movie.durations}</td>
+                                    <td>{movie.category.name}</td>
+                                    {/* <td>{movie.genres?.map((genre, index) => (
                                         <div key={index}><span>{genre?.label}</span><br /></div>
-                                    ))}</td>
-                                    <td>{movie.related_movies?.map((movie, index) => (
+                                    ))}</td> */}
+                                    {/* <td>{movie.related_movies?.map((movie, index) => (
                                         <div key={index}><span>{movie?.label}</span><br /></div>
-                                    ))}</td>
+                                    ))}</td> */}
                                     <td>
                                         <button className="btn btn-danger" onClick={() => handleDelete(index)}>Delete</button>
                                         <button className="btn btn-success" onClick={() => handleEdit(index)}>Edit</button>
