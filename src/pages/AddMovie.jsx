@@ -286,9 +286,9 @@ const AddMovie = () => {
                                     <td>{movie.genres && JSON.parse(movie.genres)?.map((genre, id) => (
                                         <div key={id}><span>{genre.label}</span><br /></div>
                                     ))}</td>
-                                    {/* <td>{movie.related_movies && JSON.parse(movie.related_movies)?.map((movie, id) => (
+                                    <td>{movie.related_movies && JSON.parse(movie.related_movies)?.map((movie, id) => (
                                         <div key={id}><span>{movie?.label}</span><br /></div>
-                                    ))}</td> */}
+                                    ))}</td>
                                     {/* <td>{categories && categories?.map((category, id) => (
                                         <div key={id}><span>{category.name}</span><br /></div>
                                     ))}</td> */}
