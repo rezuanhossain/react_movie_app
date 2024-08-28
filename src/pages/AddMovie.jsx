@@ -27,82 +27,17 @@ const AddMovie = () => {
     const [categories, setCategories] = useState([]);
     const [selectedGenres, setSelectedGenres] = useState([]);
     const [selectedRelatedMovies, setSelectedRelatedMovies] = useState([]);
-    const [genres, setGenres] = useState([]);
-    const [newGenre, setNewGenre] = useState("");
-
-    // useEffect(() => {
-    //     const storedMovieData = JSON.parse(window.localStorage.getItem('movieData'));
-    //     if (storedMovieData) {
-    //         setMovieData(storedMovieData);
-    //         storedMovieData.map((movie,index) => {
-    //             let movieObj = {
-    //                 label: movie.movie_name, 
-    //                 value: index
-    //             }
-    //             movieOptions.push(movieObj);
-    //         });
-    //     }
-
-    //     const storedCategories = JSON.parse(window.localStorage.getItem('categories'));
-    //     if (storedCategories) {
-    //         setCategories(storedCategories);
-    //     }
-    //     const storedGenres = JSON.parse(window.localStorage.getItem('genres'));
-    //     if (storedGenres) {
-    //         storedGenres.map((genre) => {
-    //             if (!genreOptions.find(item => item.value === genre)) {
-    //                 let genreObj = {
-    //                     label: genre, 
-    //                     value: genre
-    //                 }
-    //                 genreOptions.push(genreObj);
-    //             }
-    //         });
-    //     }
-    // }, []);
 
     useEffect(() => {
         const fetchAddMovie = async () => {
           try {
             const response = await callApi.get('/movies/get-all-movies');
-            console.log(response)
-         
             setMovieData(response.data.movies);
-            
           } catch (error) {
             console.error('Error fetching movies:', error);
           }
         };
-      
         fetchAddMovie();
-      }, []);
-
-    useEffect(() => {
-        const fetchGenre = async () => {
-          try {
-            const response = await callApi.get('/genres/get-all-genres');
-            console.log(response)
-            setGenres(response.data.genres);
-          } catch (error) {
-            console.error('Error fetching genres:', error);
-          }
-        };
-      
-        fetchGenre();
-      }, []);
-
-    useEffect(() => {
-        const fetchCategories = async () => {
-          try {
-            const response = await callApi.get('/categories/get-all-categories');
-            console.log(response)
-            setCategories(response.data.categories);
-          } catch (error) {
-            console.error('Error fetching categories:', error);
-          }
-        };
-      
-        fetchCategories();
       }, []);
 
     const handleChange = (event) => {
@@ -157,7 +92,6 @@ const AddMovie = () => {
     setSelectedRelatedMovies([]);
 };
 
-
     const handleDelete = (index) => {
         const deletedData = movieData.filter((_, i) => i !== index);
         setMovieData(deletedData);
@@ -210,9 +144,7 @@ const AddMovie = () => {
             setAdditionalImages(images);
         });
     };
-
     
-
     return (
         <div>
             
@@ -351,19 +283,15 @@ const AddMovie = () => {
                                     <td>{movie.star_casts}</td>
                                     <td>{movie.durations}</td>
                                     <td>{movie.category.name}</td>
-                                    {/* <td>{movie.genres?.map((genre, id) => (
-                                        <div key={index}><span>{genre?.label}</span><br/></div>
-                                    ))}
-                                    </td> */}
-                                    <td>{genres && genres?.map((genre, id) => (
-                                        <div key={id}><span>{genre.name}</span><br /></div>
+                                    <td>{movie.genres && JSON.parse(movie.genres)?.map((genre, id) => (
+                                        <div key={id}><span>{genre.label}</span><br /></div>
                                     ))}</td>
-                                    {/* <td>{movie.related_movies?.map((movie, index) => (
-                                        <div key={index}><span>{movie?.label}</span><br /></div>
+                                    {/* <td>{movie.related_movies && JSON.parse(movie.related_movies)?.map((movie, id) => (
+                                        <div key={id}><span>{movie?.label}</span><br /></div>
                                     ))}</td> */}
-                                    <td>{categories && categories?.map((category, id) => (
+                                    {/* <td>{categories && categories?.map((category, id) => (
                                         <div key={id}><span>{category.name}</span><br /></div>
-                                    ))}</td>
+                                    ))}</td> */}
                                     <td>
                                         <button className="btn btn-danger" onClick={() => handleDelete(index)}>Delete</button>
                                         <button className="btn btn-success" onClick={() => handleEdit(index)}>Edit</button>
