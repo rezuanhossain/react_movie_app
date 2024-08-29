@@ -282,16 +282,15 @@ const AddMovie = () => {
                                     <td>{new Date(movie.release_date).toLocaleDateString()}</td>
                                     <td>{movie.star_casts}</td>
                                     <td>{movie.durations}</td>
-                                    <td>{movie.category.name}</td>
                                     <td>{movie.genres && JSON.parse(movie.genres)?.map((genre, id) => (
                                         <div key={id}><span>{genre.label}</span><br /></div>
                                     ))}</td>
                                     <td>{movie.related_movies && JSON.parse(movie.related_movies)?.map((movie, id) => (
                                         <div key={id}><span>{movie?.label}</span><br /></div>
                                     ))}</td>
-                                    {/* <td>{categories && categories?.map((category, id) => (
+                                    <td>{categories && categories?.map((category, id) => (
                                         <div key={id}><span>{category.name}</span><br /></div>
-                                    ))}</td> */}
+                                    ))}</td>
                                     <td>
                                         <button className="btn btn-danger" onClick={() => handleDelete(index)}>Delete</button>
                                         <button className="btn btn-success" onClick={() => handleEdit(index)}>Edit</button>
