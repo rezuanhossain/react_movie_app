@@ -23,6 +23,8 @@ const AddMovie = () => {
     const [startDate, setStartDate] = useState(new Date());
     const [editIndex, setEditIndex] = useState(null);
     const [selectedCategory, setSelectedCategory] = useState("");
+    const [selectedCategories, setSelectedCategories] = useState([]);
+
     const [categories, setCategories] = useState([]);
     const [selectedGenres, setSelectedGenres] = useState([]);
     const [selectedRelatedMovies, setSelectedRelatedMovies] = useState([]);
@@ -47,23 +49,23 @@ const AddMovie = () => {
 
 // Other event handlers and render code remains the same
 
-const handleChange = (event) => {
-    const name = event.target.name;
-    const value = event.target.value;
-    setInputs(values => ({ ...values, [name]: value }));
-};
-
-const handleSubmit = (event) => {
-    event.preventDefault();
-    let oldData = JSON.parse(window.localStorage.getItem('movieData')) ?? [];
-
-    let trailerUrl = inputs.trailer;
-
-    const extractVideoId = (url) => {
-        const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-        const matches = url.match(regex);
-        return matches ? matches[1] : null;
+    const handleChange = (event) => {
+        const name = event.target.name;
+        const value = event.target.value;
+        setInputs(values => ({ ...values, [name]: value }));
     };
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        let oldData = JSON.parse(window.localStorage.getItem('movieData')) ?? [];
+
+        let trailerUrl = inputs.trailer;
+
+        const extractVideoId = (url) => {
+            const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+            const matches = url.match(regex);
+            return matches ? matches[1] : null;
+        };
 
     const videoId = extractVideoId(trailerUrl);
     if (videoId) {
@@ -74,11 +76,12 @@ const handleSubmit = (event) => {
         ...inputs,
         trailer: trailerUrl,
         release_date: startDate,
-        category: selectedCategory,
+        categories: selectedCategories,  // Update here
         genres: selectedGenres,
         additional_images: additionalImages,
         related_movies: selectedRelatedMovies
     };
+    
 
     if (editIndex !== null) {
         oldData[editIndex] = movieDetails;
@@ -113,10 +116,11 @@ const handleSubmit = (event) => {
         setStartDate(new Date(movie.release_date));
         setEditIndex(index);
         setShowModal(true);
-        setSelectedCategory(movie.category || "");
+        setSelectedCategories(movie.categories || []);  // Update here
         setSelectedGenres(movie.genres || []);
         setSelectedRelatedMovies(movie.related_movies || []);
     };
+    
 
     let base64String = "";
     const imageUploaded = (event) => {
@@ -212,14 +216,16 @@ const handleSubmit = (event) => {
                                             <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} required />
                                         </div>
                                         <div className="mb-3">
-                                            <label htmlFor="category" className="form-label">Language</label>
-                                            <select className="form-control" id="category" value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} required>
-                                                <option value="">Select a category</option>
-                                                {categories.map((category) => (
-                                                    <option key={category.id} value={category.name}>{category.name}</option>
-                                                ))}
-                                            </select>
+                                            <label htmlFor="categories" className="form-label">Languages</label>
+                                            <MultiSelect
+                                                id="categories"
+                                                options={categories.map(category => ({ label: category.name, value: category.name }))}
+                                                value={selectedCategories}
+                                                onChange={setSelectedCategories}
+                                                labelledBy="Select Categories"
+                                            />
                                         </div>
+
                                         
                                         <div className='mb-3'>
                                             <label htmlFor="genres" className="form-label">Genres</label>
@@ -294,9 +300,10 @@ const handleSubmit = (event) => {
                                     <td>{movie.related_movies && JSON.parse(movie.related_movies)?.map((movie, id) => (
                                         <div key={id}><span>{movie?.label}</span><br /></div>
                                     ))}</td>
-                                    <td>{categories && categories?.map((category, id) => (
-                                        <div key={id}><span>{category.name}</span><br /></div>
-                                    ))}</td>
+                                    <td>{movie.categories && movie.categories.map((category, id) => (
+    <div key={id}><span>{category.label}</span><br /></div>
+))}</td>
+
                                     <td>
                                         <button className="btn btn-danger" onClick={() => handleDelete(index)}>Delete</button>
                                         <button className="btn btn-success" onClick={() => handleEdit(index)}>Edit</button>
