@@ -36,16 +36,37 @@ const AddMovie = () => {
             try {
                 const categoryResponse = await callApi.get('/categories/get-all-categories');
                 setCategories(categoryResponse.data.categories);
-
+    
                 const movieResponse = await callApi.get('/movies/get-all-movies');
                 console.log("Fetched movie data:", movieResponse.data.movies);
                 setMovieData(movieResponse.data.movies);
+    
+                // Populate movieOptions with the fetched movies
+                movieOptions.length = 0;  // Clear existing options
+                movieResponse.data.movies.forEach(movie => movieOptions.push({ label: movie.name, value: movie.name }));
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
         };
         fetchCategoriesAndMovies();
     }, []);
+    
+
+    useEffect(() => {
+        const fetchGenres = async () => {
+            try {
+                const genreResponse = await callApi.get('/genres/get-all-genres');
+                const genres = genreResponse.data.genres;
+                genreOptions.length = 0;  // Clear existing genres
+                genres.forEach(genre => genreOptions.push({ label: genre.name, value: genre.name }));
+            } catch (error) {
+                console.error('Error fetching genres:', error);
+            }
+        };
+    
+        fetchGenres();
+    }, []);
+    
 
 // Other event handlers and render code remains the same
 
@@ -76,7 +97,7 @@ const AddMovie = () => {
         ...inputs,
         trailer: trailerUrl,
         release_date: startDate,
-        categories: selectedCategories,  // Update here
+        categories: selectedCategories,  
         genres: selectedGenres,
         additional_images: additionalImages,
         related_movies: selectedRelatedMovies
@@ -116,7 +137,7 @@ const AddMovie = () => {
         setStartDate(new Date(movie.release_date));
         setEditIndex(index);
         setShowModal(true);
-        setSelectedCategories(movie.categories || []);  // Update here
+        setSelectedCategories(movie.categories || []);  
         setSelectedGenres(movie.genres || []);
         setSelectedRelatedMovies(movie.related_movies || []);
     };
@@ -226,11 +247,10 @@ const AddMovie = () => {
                                             />
                                         </div>
 
-                                        
                                         <div className='mb-3'>
                                             <label htmlFor="genres" className="form-label">Genres</label>
                                             <MultiSelect
-                                                id = "genres"
+                                                id="genres"
                                                 options={genreOptions}
                                                 value={selectedGenres}
                                                 onChange={setSelectedGenres}
@@ -240,9 +260,8 @@ const AddMovie = () => {
 
                                         <div className="mb-3">
                                             <label htmlFor="relatedMovies" className="form-label">Related Movies</label>
-                                            {console.log("aa", movieOptions)}
                                             <MultiSelect
-                                                id = "relatedMovies"
+                                                id="relatedMovies"
                                                 options={movieOptions}
                                                 value={selectedRelatedMovies}
                                                 onChange={setSelectedRelatedMovies}
@@ -296,14 +315,16 @@ const AddMovie = () => {
                                     <td>{movie.durations}</td>
                                     <td>{movie.genres && JSON.parse(movie.genres)?.map((genre, id) => (
                                         <div key={id}><span>{genre.label}</span><br /></div>
-                                    ))}</td>
+                                    ))}
+                                    </td>
                                     <td>{movie.related_movies && JSON.parse(movie.related_movies)?.map((movie, id) => (
                                         <div key={id}><span>{movie?.label}</span><br /></div>
-                                    ))}</td>
+                                    ))}
+                                    </td>
                                     <td>{movie.categories && movie.categories.map((category, id) => (
-    <div key={id}><span>{category.label}</span><br /></div>
-))}</td>
-
+                                        <div key={id}><span>{category.label}</span><br /></div>
+                                    ))}
+                                    </td>
                                     <td>
                                         <button className="btn btn-danger" onClick={() => handleDelete(index)}>Delete</button>
                                         <button className="btn btn-success" onClick={() => handleEdit(index)}>Edit</button>
