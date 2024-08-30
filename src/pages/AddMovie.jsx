@@ -9,8 +9,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import '../App.css';
 import { Link } from "react-router-dom";
 import { MultiSelect } from "react-multi-select-component";
-import callApi from '../api/api'
-
+import callApi from '../api/api';
 
 const genreOptions = [];
 const movieOptions = [];
@@ -27,31 +26,39 @@ const AddMovie = () => {
     const [categories, setCategories] = useState([]);
     const [selectedGenres, setSelectedGenres] = useState([]);
     const [selectedRelatedMovies, setSelectedRelatedMovies] = useState([]);
+   
 
+    // Fetch categories and movies
     useEffect(() => {
-        const fetchAddMovie = async () => {
-          try {
-            const response = await callApi.get('/movies/get-all-movies');
-            setMovieData(response.data.movies);
-          } catch (error) {
-            console.error('Error fetching movies:', error);
-          }
+        const fetchCategoriesAndMovies = async () => {
+            try {
+                const categoryResponse = await callApi.get('/categories/get-all-categories');
+                setCategories(categoryResponse.data.categories);
+
+                const movieResponse = await callApi.get('/movies/get-all-movies');
+                console.log("Fetched movie data:", movieResponse.data.movies);
+                setMovieData(movieResponse.data.movies);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
         };
-        fetchAddMovie();
-      }, []);
+        fetchCategoriesAndMovies();
+    }, []);
 
-    const handleChange = (event) => {
-        const name = event.target.name;
-        const value = event.target.value;
-        setInputs(values => ({ ...values, [name]: value }));
-    };
+// Other event handlers and render code remains the same
 
-    const handleSubmit = (event) => {
+const handleChange = (event) => {
+    const name = event.target.name;
+    const value = event.target.value;
+    setInputs(values => ({ ...values, [name]: value }));
+};
+
+const handleSubmit = (event) => {
     event.preventDefault();
     let oldData = JSON.parse(window.localStorage.getItem('movieData')) ?? [];
 
     let trailerUrl = inputs.trailer;
-    
+
     const extractVideoId = (url) => {
         const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
         const matches = url.match(regex);
@@ -147,7 +154,6 @@ const AddMovie = () => {
     
     return (
         <div>
-            
             <header className="bg-warning py-3 mb-4">
                 <div className="container">
                     <div className="d-flex justify-content-center">
@@ -168,7 +174,7 @@ const AddMovie = () => {
                                     <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={() => { setShowModal(false); setEditIndex(null); setSelectedCategory(""); }}></button>
                                 </div>
                                 <div className="modal-body">
-                                    <form onSubmit={handleSubmit} >
+                                    <form onSubmit={handleSubmit}>
                                         <div className="mb-3">
                                             <label htmlFor="formFile" className="form-label">Movie Poster</label>
                                             <input className="form-control" type="file" id="formFile" name='poster' onChange={imageUploaded} required={!imgData} />
@@ -176,15 +182,15 @@ const AddMovie = () => {
                                                 <img src={imgData} alt="" className='h-100px w-100px' />
                                             </div>
                                         </div>
-                                        <div className="mb-3">
+                                        {/* <div className="mb-3">
                                             <label htmlFor="additionalImages" className="form-label">Additional Images</label>
                                             <input className="form-control" type="file" id="additionalImages" name='additionalImages' onChange={additionalImagesUploaded} multiple />
                                             <div className=''>
-                                                {additionalImages.map((img, index) => (
+                                                {additional_images && additional_images.map((img, index) => (
                                                     <img key={index} src={img} alt="" className='h-100px w-100px' />
                                                 ))}
                                             </div>
-                                        </div>
+                                        </div> */}
                                         <div className="mb-3">
                                             <label htmlFor="movie_name" className="form-label">Movie Name</label>
                                             <input type="text" className="form-control" id="movie_name" name="movie_name" value={inputs.movie_name || ""} onChange={handleChange} required />
@@ -209,8 +215,8 @@ const AddMovie = () => {
                                             <label htmlFor="category" className="form-label">Language</label>
                                             <select className="form-control" id="category" value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} required>
                                                 <option value="">Select a category</option>
-                                                {categories.map((category, index) => (
-                                                    <option key={index} value={category}>{category}</option>
+                                                {categories.map((category) => (
+                                                    <option key={category.id} value={category.name}>{category.name}</option>
                                                 ))}
                                             </select>
                                         </div>
