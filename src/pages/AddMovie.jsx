@@ -41,8 +41,7 @@ const AddMovie = () => {
                 console.log("Fetched movie data:", movieResponse.data.movies);
                 setMovieData(movieResponse.data.movies);
     
-                // Populate movieOptions with the fetched movies
-                movieOptions.length = 0;  // Clear existing options
+                movieOptions.length = 0;  
                 movieResponse.data.movies.forEach(movie => movieOptions.push({ label: movie.name, value: movie.name }));
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -57,7 +56,7 @@ const AddMovie = () => {
             try {
                 const genreResponse = await callApi.get('/genres/get-all-genres');
                 const genres = genreResponse.data.genres;
-                genreOptions.length = 0;  // Clear existing genres
+                genreOptions.length = 0;  
                 genres.forEach(genre => genreOptions.push({ label: genre.name, value: genre.name }));
             } catch (error) {
                 console.error('Error fetching genres:', error);
@@ -121,7 +120,7 @@ const AddMovie = () => {
     setSelectedCategory("");
     setSelectedGenres([]);
     setSelectedRelatedMovies([]);
-};
+ };
 
     const handleDelete = (index) => {
         const deletedData = movieData.filter((_, i) => i !== index);
