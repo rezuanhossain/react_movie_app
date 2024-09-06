@@ -13,6 +13,7 @@ import callApi from '../api/api';
 
 const genreOptions = [];
 const movieOptions = [];
+const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
 const AddMovie = () => {
     const [inputs, setInputs] = useState({});
@@ -23,12 +24,34 @@ const AddMovie = () => {
     const [startDate, setStartDate] = useState(new Date());
     const [editIndex, setEditIndex] = useState(null);
     const [selectedCategory, setSelectedCategory] = useState("");
-    const [selectedCategories, setSelectedCategories] = useState([]);
-
     const [categories, setCategories] = useState([]);
     const [selectedGenres, setSelectedGenres] = useState([]);
     const [selectedRelatedMovies, setSelectedRelatedMovies] = useState([]);
-   
+    const [additionalImageFiles, setAdditionalImageFiles] = useState([]);
+
+
+    //Fetch movies 
+    useEffect(() => {
+        const fetchMovies = async () => {
+            try {
+              const response = await callApi.get('/movies/get-all-movies');
+              setMovieData(response.data.movies);
+    
+              if (response.data.movies) {
+                response.data.movies.map((movie,index) => {
+                    let movieObj = {
+                        label: movie.name, 
+                        value: movie.id
+                    }
+                    movieOptions.push(movieObj);
+                });
+            }
+            } catch (error) {
+              console.error('Error fetching movies:', error);
+            }
+        };
+        fetchMovies();
+    }, []);
 
     // Fetch categories and movies
     useEffect(() => {
@@ -50,7 +73,7 @@ const AddMovie = () => {
         fetchCategoriesAndMovies();
     }, []);
     
-
+    // Fetch genres and movies
     useEffect(() => {
         const fetchGenres = async () => {
             try {
@@ -75,93 +98,212 @@ const AddMovie = () => {
         setInputs(values => ({ ...values, [name]: value }));
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        let oldData = JSON.parse(window.localStorage.getItem('movieData')) ?? [];
-
-        let trailerUrl = inputs.trailer;
-
-        const extractVideoId = (url) => {
-            const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-            const matches = url.match(regex);
-            return matches ? matches[1] : null;
-        };
-
-    const videoId = extractVideoId(trailerUrl);
-    if (videoId) {
-        trailerUrl = `https://www.youtube.com/embed/${videoId}`;
-    }
-
-    const movieDetails = {
-        ...inputs,
-        trailer: trailerUrl,
-        release_date: startDate,
-        categories: selectedCategories,  
-        genres: selectedGenres,
-        additional_images: additionalImages,
-        related_movies: selectedRelatedMovies
-    };
     
+        // Replace "watch?v=" with "embed/" in the trailer URL if applicable
+        let trailerUrl = inputs.trailer_url;
+        if (trailerUrl.includes("watch?v=")) {
+            trailerUrl = trailerUrl.replace("watch?v=", "embed/");
+        }
+    
+        const formData = new FormData();
+        formData.append('name', inputs.name);
+        formData.append('description', inputs.description);
+        formData.append('category_id', selectedCategory);
+        formData.append('release_date', startDate.toISOString().split('T')[0]);
+        formData.append('trailer_url', trailerUrl);
+        formData.append('star_casts', inputs.star_casts);
+        formData.append('durations', inputs.durations);
+    
+        if (inputs.poster) {
+            formData.append('thumbnail_img', inputs.poster);
+        }
+    
+        formData.append('genres', JSON.stringify(selectedGenres));
+        formData.append('related_movies', JSON.stringify(selectedRelatedMovies));
+    
+        additionalImageFiles.forEach(file => {
+            formData.append('additional_images', file);
+        });
+    
+        try {
+            let response;
+            if (editIndex !== null) {
+                formData.append('id', editIndex);
+                response = await callApi.post('/movies/update', formData, { withCredentials: true });
+                console.log('Movie updated successfully:', response.data);
+            } else {
+                response = await callApi.post('/movies', formData, { withCredentials: true });
+                console.log('Movie created successfully:', response.data);
+            }
+    
+            fetchMovies(); // Refresh movie list
+            resetFormState(); // Reset states only after a successful submission
+    
+        } catch (error) {
+            // Capture detailed error information
+            if (error.response) {
+                // Server responded with a status other than 2xx
+                console.error('Error response data:', error.response.data);
+                console.error('Error response status:', error.response.status);
+                console.error('Error response headers:', error.response.headers);
+            } else if (error.request) {
+                // Request was made but no response received
+                console.error('Error request data:', error.request);
+            } else {
+                // Something happened in setting up the request
+                console.error('Error message:', error.message);
+            }
+            console.error('Error config:', error.config);
+        }
+    };   
 
-    if (editIndex !== null) {
-        oldData[editIndex] = movieDetails;
-    } else {
-        oldData = [...oldData, movieDetails];
-    }
-
-    window.localStorage.setItem('movieData', JSON.stringify(oldData));
-    setMovieData(oldData);
-    setInputs({});
-    setImgData(null);
-    setAdditionalImages([]);
-    setStartDate(new Date());
-    setShowModal(false);
-    setEditIndex(null);
-    setSelectedCategory("");
-    setSelectedGenres([]);
-    setSelectedRelatedMovies([]);
- };
-
-    const handleDelete = (index) => {
-        const deletedData = movieData.filter((_, i) => i !== index);
-        setMovieData(deletedData);
-        window.localStorage.setItem('movieData', JSON.stringify(deletedData));
+    // Helper function to reset form states
+    const resetFormState = () => {
+        setShowModal(false);
+        setInputs({});
+        setImgData(null);
+        setAdditionalImages([]);
+        setAdditionalImageFiles([]);
+        setStartDate(new Date());
+        setEditIndex(null);
+        setSelectedCategory("");
+        setSelectedGenres([]);
+        setSelectedRelatedMovies([]);
     };
 
-    const handleEdit = (index) => {
-        const movie = movieData[index];
-        setInputs(movie);
-        setImgData(movie.poster);
-        setAdditionalImages(movie.additional_images || []);
-        setStartDate(new Date(movie.release_date));
-        setEditIndex(index);
-        setShowModal(true);
-        setSelectedCategories(movie.categories || []);  
-        setSelectedGenres(movie.genres || []);
-        setSelectedRelatedMovies(movie.related_movies || []);
+
+    //Delete Function
+
+    const handleDelete = async (id) => {
+        try {
+            await callApi.post('/movies/destroy', { id });
+            const updatedMovies = movieData.filter(movie => movie.id !== id);
+            setMovieData(updatedMovies);
+          } catch (error) {
+            console.error('Error deleting movie:', error);
+          }
+    };
+
+    const handleEdit = async (id) => {
+        try {
+            // Fetch the movie data by ID
+            const response = await callApi.get(`/movies/${id}`);
+            const movie = response.data.movie;
+    
+            if (!movie) return;
+    
+            // Function to clean and parse JSON strings
+            const parseJSON = (jsonString) => {
+                try {
+                    return JSON.parse(jsonString.replace(/\\/g, ''));
+                } catch (error) {
+                    console.error('Error parsing JSON:', error);
+                    return [];
+                }
+            };
+    
+            // Safely parse related movies and genres
+            const relatedMovies = Array.isArray(movie.related_movies)
+                ? movie.related_movies
+                : parseJSON(movie.related_movies || '[]');
+    
+            const movieGenres = Array.isArray(movie.genres)
+                ? movie.genres
+                : parseJSON(movie.genres || '[]');
+    
+            setSelectedRelatedMovies(
+                relatedMovies.map(relatedMovie => ({
+                    label: relatedMovie.label,
+                    value: relatedMovie.value
+                }))
+            );
+    
+            setSelectedGenres(
+                movieGenres.map(genre => ({
+                    label: genre.label,
+                    value: genre.value
+                }))
+            );
+    
+            setInputs({
+                name: movie.name,
+                description: movie.description,
+                star_casts: movie.star_casts,
+                durations: movie.durations,
+                trailer_url: movie.trailer_url,
+            });
+    
+            // Set the thumbnail image
+            setImgData(movie.thumbnail_img ? `${process.env.REACT_APP_BACKEND_URL}${movie.thumbnail_img}` : null);
+    
+            // Parse additional images
+            const additionalImages = Array.isArray(movie.additional_images)
+                ? movie.additional_images
+                : parseJSON(movie.additional_images || '[]');
+    
+            setAdditionalImages(
+                additionalImages.map(img => `${process.env.REACT_APP_BACKEND_URL}${img}`)
+            );
+    
+            setAdditionalImageFiles([]); // Reset any previous file inputs
+            setStartDate(new Date(movie.release_date));
+            setEditIndex(id);
+            setSelectedCategory(movie.category_id || "");
+            setShowModal(true);
+    
+            // Fetch related movies data
+            const relatedMoviesData = await Promise.all(
+                relatedMovies.map(async relatedMovie => {
+                    try {
+                        const relatedResponse = await callApi.get(`/movies/${relatedMovie.value}`);
+                        const relatedMovieData = relatedResponse.data.movie;
+                        return {
+                            label: relatedMovie.label,
+                            value: relatedMovie.value,
+                            poster: relatedMovieData?.thumbnail_img,
+                            movie_name: relatedMovieData?.name
+                        };
+                    } catch (e) {
+                        console.error(`Error fetching related movie data for ${relatedMovie.value}:`, e);
+                        return {
+                            label: relatedMovie.label,
+                            value: relatedMovie.value,
+                            poster: null,
+                            movie_name: null
+                        };
+                    }
+                })
+            );
+    
+            setSelectedRelatedMovies(relatedMoviesData);
+    
+        } catch (error) {
+            console.error("Error fetching movie data or related movies:", error);
+        }
     };
     
 
     let base64String = "";
     const imageUploaded = (event) => {
-        let files = event.target.files;
+        const file = event.target.files[0];
         let reader = new FileReader();
-
+    
         reader.onload = function () {
-            base64String = reader.result;
+            setImgData(reader.result);
             setInputs((prev) => ({
                 ...prev,
-                "poster": base64String
+                "poster": file
             }));
-            setImgData(base64String);
         };
-
-        reader.readAsDataURL(files[0]);
+    
+        reader.readAsDataURL(file);
     };
 
     const additionalImagesUploaded = (event) => {
-        let files = Array.from(event.target.files);
-        let promises = files.map(file => {
+        const files = Array.from(event.target.files);
+        const promises = files.map(file => {
             return new Promise((resolve, reject) => {
                 let reader = new FileReader();
                 reader.onload = function () {
@@ -170,10 +312,22 @@ const AddMovie = () => {
                 reader.readAsDataURL(file);
             });
         });
-
+    
         Promise.all(promises).then(images => {
             setAdditionalImages(images);
+            setAdditionalImageFiles(files); // Store the files for uploading
         });
+    };
+
+
+    const handleDeleteImage = (index) => {
+        // Remove the image from additionalImages
+        const newAdditionalImages = additionalImages.filter((_, imgIndex) => imgIndex !== index);
+        setAdditionalImages(newAdditionalImages);
+    
+        // Remove the image from additionalImageFiles if needed
+        const newAdditionalImageFiles = additionalImageFiles.filter((_, imgIndex) => imgIndex !== index);
+        setAdditionalImageFiles(newAdditionalImageFiles);
     };
     
     return (
@@ -206,15 +360,24 @@ const AddMovie = () => {
                                                 <img src={imgData} alt="" className='h-100px w-100px' />
                                             </div>
                                         </div>
-                                        {/* <div className="mb-3">
+                                        <div className="mb-3">
                                             <label htmlFor="additionalImages" className="form-label">Additional Images</label>
                                             <input className="form-control" type="file" id="additionalImages" name='additionalImages' onChange={additionalImagesUploaded} multiple />
                                             <div className=''>
-                                                {additional_images && additional_images.map((img, index) => (
-                                                    <img key={index} src={img} alt="" className='h-100px w-100px' />
-                                                ))}
+                                                {additionalImages.length > 0 ? (
+                                                    <div>
+                                                        {additionalImages.map((img, index) => (
+                                                            <div key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+                                                                <img src={img} alt={`Additional ${index}`} style={{ width: '100px', height: '100px', objectFit: 'cover', marginRight: '10px' }} />
+                                                                <button onClick={() => handleDeleteImage(index)} className="btn btn-danger">Delete</button>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <p>No additional images available.</p>
+                                                )}
                                             </div>
-                                        </div> */}
+                                        </div>
                                         <div className="mb-3">
                                             <label htmlFor="movie_name" className="form-label">Movie Name</label>
                                             <input type="text" className="form-control" id="movie_name" name="movie_name" value={inputs.movie_name || ""} onChange={handleChange} required />
@@ -229,7 +392,7 @@ const AddMovie = () => {
                                         </div>
                                         <div className="mb-3">
                                             <label htmlFor="duration" className="form-label">Duration</label>
-                                            <input type="text" className="form-control" id="duration" name="duration" value={inputs.duration || ""} onChange={handleChange} required />
+                                            <input type="text" className="form-control" id="duration" name="duration" value={inputs.durations || ""} onChange={handleChange} required />
                                         </div>
                                         
                                         <div className="mb-3">
@@ -237,13 +400,12 @@ const AddMovie = () => {
                                         </div>
                                         <div className="mb-3">
                                             <label htmlFor="categories" className="form-label">Languages</label>
-                                            <MultiSelect
-                                                id="categories"
-                                                options={categories.map(category => ({ label: category.name, value: category.name }))}
-                                                value={selectedCategories}
-                                                onChange={setSelectedCategories}
-                                                labelledBy="Select Categories"
-                                            />
+                                            <select className="form-control" id="category_id" value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} required>
+                                                <option value="">Select a category</option>
+                                                {categories.map((category, index) => (
+                                                    <option key={category.id} value={category.id}>{category.name}</option>
+                                                ))}
+                                            </select>
                                         </div>
 
                                         <div className='mb-3'>
@@ -270,7 +432,7 @@ const AddMovie = () => {
 
                                         <div className="mb-3">
                                             <label htmlFor="trailer" className="form-label">Trailer Link</label>
-                                            <input type="text" className="form-control" id="trailer" name="trailer" value={inputs.trailer || ""} onChange={handleChange} required />
+                                            <input type="text" className="form-control" id="trailer_url" name="trailer_url" value={inputs.trailer_url || ""} onChange={handleChange} required />
                                         </div>
                                         <button type='submit' className="btn btn-primary">Submit</button>
                                     </form>
@@ -300,11 +462,15 @@ const AddMovie = () => {
                         {movieData.length > 0 && movieData.map((movie, index) => {
                             
                             return (
-                                <tr key={index}>
+                                <tr key={movie.id}>
                                     <th scope="row">{index + 1}</th>
                                     <td>
                                         <div className="h-100px w-100px">
-                                            <img src={`http://localhost:8000${movie.thumbnail_img}`} className="img-fluid rounded-start" alt={movie.name} />
+                                            <img 
+                                                src={`${backendUrl}/${movie.thumbnail_img}`}  
+                                                className="img-fluid rounded-start" 
+                                                alt={movie.name} 
+                                            />
                                         </div>
                                     </td>
                                     <td>{movie.name}</td>
@@ -312,21 +478,16 @@ const AddMovie = () => {
                                     <td>{new Date(movie.release_date).toLocaleDateString()}</td>
                                     <td>{movie.star_casts}</td>
                                     <td>{movie.durations}</td>
-                                    <td>{movie.genres && JSON.parse(movie.genres)?.map((genre, id) => (
-                                        <div key={id}><span>{genre.label}</span><br /></div>
-                                    ))}
-                                    </td>
-                                    <td>{movie.related_movies && JSON.parse(movie.related_movies)?.map((movie, id) => (
-                                        <div key={id}><span>{movie?.label}</span><br /></div>
-                                    ))}
-                                    </td>
-                                    <td>{movie.categories && movie.categories.map((category, id) => (
-                                        <div key={id}><span>{category.label}</span><br /></div>
-                                    ))}
-                                    </td>
+                                    {/* <td>{movie.category.name}</td> */}
+                                    <td>{JSON.parse(movie.genres).map((genre) => (
+                                        <div key={genre.value}><span>{genre.label}</span><br /></div>
+                                    ))}</td>
+                                    <td>{JSON.parse(movie.related_movies).map((movie, index) => (
+                                        <div key={movie.value}><span>{movie.label}</span><br /></div>
+                                    ))}</td>
                                     <td>
-                                        <button className="btn btn-danger" onClick={() => handleDelete(index)}>Delete</button>
-                                        <button className="btn btn-success" onClick={() => handleEdit(index)}>Edit</button>
+                                        <button className="btn btn-danger" onClick={() => handleDelete(movie.id)}>Delete</button>
+                                        <button className="btn btn-success" onClick={() => handleEdit(movie.id)}>Edit</button>
                                     </td>
                                 </tr>
                             )

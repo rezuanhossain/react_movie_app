@@ -85,8 +85,8 @@ const CategoryForm = () => {
       </div>
       <div>
         <ul className="list-group">
-          {categories && categories?.map((category, id) => (
-            <li key={id} className="list-group-item d-flex justify-content-between align-items-center">
+          {categories && categories.map((category) => (
+            <li key={category.id} className="list-group-item d-flex justify-content-between align-items-center">
               {category.name}
               <button className="btn btn-danger btn-sm" onClick={() => handleDeleteCategory(category.id)}>Delete</button>
             </li>

@@ -6,7 +6,10 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import callApi from '../api/api';
 import Viewer from 'react-viewer';
+
+const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
 
 const MovieDetail = () => {
@@ -19,18 +22,60 @@ const MovieDetail = () => {
     const [visible, setVisible] = useState(false);
 
     useEffect(() => {
-        const storedMovieData = JSON.parse(window.localStorage.getItem('movieData'));
-        if (storedMovieData) {
-            setMovie(storedMovieData[movieId]);
-            if (storedMovieData[movieId] && storedMovieData[movieId].related_movies) {
-                const relatedMoviesData = storedMovieData[movieId].related_movies.map(movieName => {
-                    return storedMovieData.find((movie,index) => index == movieName.value);
-                });
-                setRelatedMovies(relatedMoviesData);
-            } else {
-                setRelatedMovies([]);
+        const fetchMovieData = async () => {
+            try {
+                const response = await callApi.get(`/movies/${movieId}`);
+                const movieData = response.data.movie;
+    
+                if (movieData) {
+                    // Parse genres
+                    movieData.genres = JSON.parse(movieData.genres);
+    
+                    // Clean and parse additional_images
+                    let cleanAdditionalImages = movieData.additional_images
+                        .replace(/\\/g, '')   // Remove any escaping backslashes
+                        .replace(/^"|"$/g, ''); // Remove the leading and trailing quotes
+    
+                    try {
+                        movieData.additional_images = JSON.parse(cleanAdditionalImages);
+                    } catch (parseError) {
+                        console.error('Failed to parse additional_images:', parseError);
+                        movieData.additional_images = []; // Default to an empty array if parsing fails
+                    }
+    
+                    // Parse related_movies
+                    movieData.related_movies = JSON.parse(movieData.related_movies);
+                    setMovie(movieData);
+                    console.log("count", movieData.related_movies)
+                    // Fetch related movies data
+                    const relatedMoviesData = await Promise.all(
+                        movieData.related_movies.map(async (relatedMovie) => {
+                            try {
+                                const relatedResponse = await callApi.get(`/movies/${relatedMovie.value}`);
+                                const relatedMovieData = relatedResponse.data.movie;
+    
+                                return {
+                                    label: relatedMovie.label,
+                                    value: relatedMovie.value,
+                                    thumbnail_img: relatedMovieData.thumbnail_img,
+                                    name: relatedMovieData.name,
+                                };
+                            } catch (error) {
+                                console.error(`Error fetching related movie ${relatedMovie.value}:`, error);
+                                return null; // Return null if the fetch fails
+                            }
+                        })
+                    );
+    
+                    // Filter out null values (in case of fetch failures)
+                    setRelatedMovies(relatedMoviesData.filter(movie => movie !== null));
+                }
+            } catch (error) {
+                console.error('Error fetching movie data:', error);
             }
-        }
+        };
+    
+        fetchMovieData();
     }, [movieId]);
 
     const PrevArrow = (props) => {
@@ -84,22 +129,22 @@ const MovieDetail = () => {
                         
                         {activeTab === 'info' && (
                             <div>
-                                <h1>{movie.movie_name}</h1>
-                                <img src={movie?.poster} alt={movie.movie_name} className="img-fluid rounded-2 mb-4 image-border-line" />
+                                <h1>{movie.name}</h1>
+                                <img src={`${backendUrl}${movie.thumbnail_img}`} alt={movie.name} className="img-fluid rounded-start mb-4" />
                                 <hr className='info-line'/>
                                 <p className='text-warning m-2'>{movie.description}</p>
                                 <p>Release Date: {new Date(movie.release_date).toLocaleDateString()}</p>
                                 <p>Star Cast: {movie.star_cast}</p>
-                                <p>Duration: {movie.duration}</p>
-                                <p>Category: {movie.category}</p>
+                                <p>Duration: {movie.durations} minutes</p>
+                                <p>Category: {movie.category.name}</p>
                                 <p>Genre: {movie.genres.map((genre) => genre.label).join(', ')}</p>
                             </div>
                         )}
 
                         {activeTab === 'trailer' && (
                             <div>
-                                <h1>{movie.movie_name}</h1>
-                                <img src={movie?.poster} alt={movie.movie_name} className="img-fluid rounded-2 mb-3" />
+                                <h1>{movie.name}</h1>
+                                <img src={`${backendUrl}${movie.thumbnail_img}`} alt={movie.name} className="img-fluid rounded-start mb-3" />
                                 <br />
                                 <iframe
                                     width="560"
@@ -116,32 +161,38 @@ const MovieDetail = () => {
 
                         {activeTab === 'gallery' && (
                             <div>
-                                <h1>{movie.movie_name}</h1>                               
-                                <img src={movie?.poster} alt={movie.movie_name} className="img-fluid rounded-2 mb-3" />
+                                <h1>{movie.name}</h1>
+                                <img src={`${backendUrl}/${movie.thumbnail_img}`} alt={movie.name} className="img-fluid rounded-start mb-3" />
                                 <br />
                                 <div className='card'>
-                                    <h3 className='mb-3'>Screenshots</h3>
-                                    <hr />
-                                    {movie.additional_images && movie.additional_images.map((image, index) => (
-                                        <img 
-                                            key={index} 
-                                            src={image} 
-                                            alt={`Additional ${index}`} 
-                                            className="img-fluid rounded-2 mb-3 smaller-image" 
-                                            onClick={() => {
-                                                setVisible(true);
-                                                setCurrentIndex(index);
-                                            }} 
-                                        />
-                                    ))}
+                                {movie?.additional_images && Array.isArray(movie.additional_images) && movie.additional_images.length > 0 ? (
+                                        movie.additional_images.map((image, index) => {
+                                            const imageUrl = `${backendUrl}${image}`;
+                                            return (
+                                                <div className="card mb-3" key={index}>
+                                                    <img 
+                                                        src={imageUrl} 
+                                                        alt={`Additional ${index}`} 
+                                                        className="img-fluid rounded-start" 
+                                                        onClick={() => {
+                                                            setVisible(true);
+                                                            setCurrentIndex(index);
+                                                        }} 
+                                                    />
+                                                </div>
+                                            );
+                                        })
+                                    ) : (
+                                        <p>No additional images available.</p>
+                                    )}
                                 </div>
                             </div>
                         )}
 
                         {activeTab === 'link' && (
                             <div>
-                                <h1>{movie.movie_name}</h1>
-                                <img src={movie?.poster} alt={movie.movie_name} className="img-fluid rounded-2 mb-3" />
+                                 <h1>{movie.name}</h1>
+                                 <img src={`${backendUrl}/${movie.thumbnail_img}`} alt={movie.name} className="img-fluid rounded-start mb-3" />
                                 <br />
                                 {movie.links && movie.links.map((link, index) => (
                                     <p key={index}><a href={link.url} target="_blank" rel="noopener noreferrer">{link.label}</a></p>
@@ -158,11 +209,11 @@ const MovieDetail = () => {
                                 {relatedMovies && relatedMovies?.map((relatedMovie, index) => (
                                     <div key={index} className="p-2">
                                     <div className="card">
-                                        <img src={relatedMovie?.poster} className="card-img-top" alt={relatedMovie.movie_name} />
+                                    <img src={`${backendUrl}/${relatedMovie?.thumbnail_img}`} className="card-img-top" alt={relatedMovie.name} />
                                         <div className="card-body">
-                                            <h5 className="card-title">{relatedMovie?.movie_name}</h5>
+                                            <h5 className="card-title">{relatedMovie?.name}</h5>
                                         </div>
-                                        <Link to={`/movies/${index}`} className="btn btn-primary">View Details</Link>
+                                        <Link to={`/movies/${relatedMovie.value}`} className="btn btn-primary">View Details</Link>
                                     </div>
                                 </div>
                                 ))}
@@ -174,7 +225,14 @@ const MovieDetail = () => {
                             rotatable={false}
                             scalable={false}
                             onClose={() => setVisible(false)}
-                            images={movie.additional_images.map((image) => ({ src: image, alt: "" }))}
+                            images={
+                                movie?.additional_images && Array.isArray(movie.additional_images)
+                                    ? movie.additional_images.map((image) => ({
+                                        src: `${backendUrl}/${image}`,
+                                        alt: ""
+                                    }))
+                                    : [] // Fallback to an empty array if additional_images is not defined or not an array
+                            }
                             activeIndex={currentIndex}
                         />
                     </div>

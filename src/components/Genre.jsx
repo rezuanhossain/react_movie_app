@@ -78,10 +78,10 @@ const GenreForm = () => {
       </div>
       <div>
         <ul className="list-group">
-          {genres && genres?.map((genre, id) => (
-            <li key={id} className="list-group-item d-flex justify-content-between align-items-center">
+          {genres.map((genre, index) => (
+            <li key={genre.id} className="list-group-item d-flex justify-content-between align-items-center">
               {genre.name}
-              <button className="btn btn-danger btn-sm" onClick={() => handleDeleteGenre(id)}>Delete</button>
+              <button className="btn btn-danger btn-sm" onClick={() => handleDeleteGenre(genre.id)}>Delete</button>
             </li>
           ))}
         </ul>
