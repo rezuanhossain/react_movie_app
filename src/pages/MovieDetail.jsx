@@ -28,26 +28,23 @@ const MovieDetail = () => {
                 const movieData = response.data.movie;
     
                 if (movieData) {
-                    // Parse genres
+                    
                     movieData.genres = JSON.parse(movieData.genres);
     
-                    // Clean and parse additional_images
                     let cleanAdditionalImages = movieData.additional_images
-                        .replace(/\\/g, '')   // Remove any escaping backslashes
-                        .replace(/^"|"$/g, ''); // Remove the leading and trailing quotes
+                        .replace(/\\/g, '')   
+                        .replace(/^"|"$/g, ''); 
     
                     try {
                         movieData.additional_images = JSON.parse(cleanAdditionalImages);
                     } catch (parseError) {
                         console.error('Failed to parse additional_images:', parseError);
-                        movieData.additional_images = []; // Default to an empty array if parsing fails
+                        movieData.additional_images = []; 
                     }
     
-                    // Parse related_movies
                     movieData.related_movies = JSON.parse(movieData.related_movies);
                     setMovie(movieData);
-                    console.log("count", movieData.related_movies)
-                    // Fetch related movies data
+                    
                     const relatedMoviesData = await Promise.all(
                         movieData.related_movies.map(async (relatedMovie) => {
                             try {
@@ -62,12 +59,11 @@ const MovieDetail = () => {
                                 };
                             } catch (error) {
                                 console.error(`Error fetching related movie ${relatedMovie.value}:`, error);
-                                return null; // Return null if the fetch fails
+                                return null; 
                             }
                         })
                     );
     
-                    // Filter out null values (in case of fetch failures)
                     setRelatedMovies(relatedMoviesData.filter(movie => movie !== null));
                 }
             } catch (error) {
@@ -231,7 +227,7 @@ const MovieDetail = () => {
                                         src: `${backendUrl}/${image}`,
                                         alt: ""
                                     }))
-                                    : [] // Fallback to an empty array if additional_images is not defined or not an array
+                                    : [] 
                             }
                             activeIndex={currentIndex}
                         />

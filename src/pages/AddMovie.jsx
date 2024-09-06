@@ -16,6 +16,7 @@ const movieOptions = [];
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
 const AddMovie = () => {
+
     const [inputs, setInputs] = useState({});
     const [imgData, setImgData] = useState();
     const [additionalImages, setAdditionalImages] = useState([]);
@@ -100,8 +101,6 @@ const AddMovie = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-    
-        // Replace "watch?v=" with "embed/" in the trailer URL if applicable
         let trailerUrl = inputs.trailer_url;
         if (trailerUrl.includes("watch?v=")) {
             trailerUrl = trailerUrl.replace("watch?v=", "embed/");
@@ -138,28 +137,23 @@ const AddMovie = () => {
                 console.log('Movie created successfully:', response.data);
             }
     
-            fetchMovies(); // Refresh movie list
-            resetFormState(); // Reset states only after a successful submission
+            fetchMovies(); 
+            resetFormState(); 
     
         } catch (error) {
-            // Capture detailed error information
             if (error.response) {
-                // Server responded with a status other than 2xx
                 console.error('Error response data:', error.response.data);
                 console.error('Error response status:', error.response.status);
                 console.error('Error response headers:', error.response.headers);
             } else if (error.request) {
-                // Request was made but no response received
                 console.error('Error request data:', error.request);
             } else {
-                // Something happened in setting up the request
                 console.error('Error message:', error.message);
             }
             console.error('Error config:', error.config);
         }
     };   
 
-    // Helper function to reset form states
     const resetFormState = () => {
         setShowModal(false);
         setInputs({});
@@ -188,13 +182,12 @@ const AddMovie = () => {
 
     const handleEdit = async (id) => {
         try {
-            // Fetch the movie data by ID
+        
             const response = await callApi.get(`/movies/${id}`);
             const movie = response.data.movie;
     
             if (!movie) return;
     
-            // Function to clean and parse JSON strings
             const parseJSON = (jsonString) => {
                 try {
                     return JSON.parse(jsonString.replace(/\\/g, ''));
@@ -204,7 +197,6 @@ const AddMovie = () => {
                 }
             };
     
-            // Safely parse related movies and genres
             const relatedMovies = Array.isArray(movie.related_movies)
                 ? movie.related_movies
                 : parseJSON(movie.related_movies || '[]');
@@ -235,10 +227,8 @@ const AddMovie = () => {
                 trailer_url: movie.trailer_url,
             });
     
-            // Set the thumbnail image
             setImgData(movie.thumbnail_img ? `${process.env.REACT_APP_BACKEND_URL}${movie.thumbnail_img}` : null);
     
-            // Parse additional images
             const additionalImages = Array.isArray(movie.additional_images)
                 ? movie.additional_images
                 : parseJSON(movie.additional_images || '[]');
@@ -247,13 +237,12 @@ const AddMovie = () => {
                 additionalImages.map(img => `${process.env.REACT_APP_BACKEND_URL}${img}`)
             );
     
-            setAdditionalImageFiles([]); // Reset any previous file inputs
+            setAdditionalImageFiles([]); 
             setStartDate(new Date(movie.release_date));
             setEditIndex(id);
             setSelectedCategory(movie.category_id || "");
             setShowModal(true);
     
-            // Fetch related movies data
             const relatedMoviesData = await Promise.all(
                 relatedMovies.map(async relatedMovie => {
                     try {
@@ -315,17 +304,15 @@ const AddMovie = () => {
     
         Promise.all(promises).then(images => {
             setAdditionalImages(images);
-            setAdditionalImageFiles(files); // Store the files for uploading
+            setAdditionalImageFiles(files); 
         });
     };
 
 
     const handleDeleteImage = (index) => {
-        // Remove the image from additionalImages
         const newAdditionalImages = additionalImages.filter((_, imgIndex) => imgIndex !== index);
         setAdditionalImages(newAdditionalImages);
-    
-        // Remove the image from additionalImageFiles if needed
+
         const newAdditionalImageFiles = additionalImageFiles.filter((_, imgIndex) => imgIndex !== index);
         setAdditionalImageFiles(newAdditionalImageFiles);
     };
@@ -391,8 +378,8 @@ const AddMovie = () => {
                                             <input type="text" className="form-control" id="star_cast" name="star_cast" value={inputs.star_cast || ""} onChange={handleChange} required />
                                         </div>
                                         <div className="mb-3">
-                                            <label htmlFor="duration" className="form-label">Duration</label>
-                                            <input type="text" className="form-control" id="duration" name="duration" value={inputs.durations || ""} onChange={handleChange} required />
+                                            <label htmlFor="durations" className="form-label">Durations</label>
+                                            <input type="text" className="form-control" id="durations" name="durations" value={inputs.durations || ""} onChange={handleChange} required />
                                         </div>
                                         
                                         <div className="mb-3">
@@ -451,7 +438,7 @@ const AddMovie = () => {
                             <th scope="col">Description</th>
                             <th scope="col">Release Date</th>
                             <th scope="col">Star Cast</th>
-                            <th scope="col">Duration</th>
+                            <th scope="col">Durations</th>
                             <th scope="col">Language</th>
                             <th scope="col">Genre</th>
                             <th scope="col">Related Movies</th>
@@ -478,7 +465,7 @@ const AddMovie = () => {
                                     <td>{new Date(movie.release_date).toLocaleDateString()}</td>
                                     <td>{movie.star_casts}</td>
                                     <td>{movie.durations}</td>
-                                    {/* <td>{movie.category.name}</td> */}
+                                    {/* <td>{movie.category}</td> */}
                                     <td>{JSON.parse(movie.genres).map((genre) => (
                                         <div key={genre.value}><span>{genre.label}</span><br /></div>
                                     ))}</td>
