@@ -24,6 +24,15 @@ const Home = () => {
 
   return (
     <div>
+      <header className="bg-warning py-3 mb-4">
+                <div className="container">
+                    <div className="d-flex justify-content-center">
+                        <Link to={'/'} className="fw-bold bg-secondary btn btn-dark mx-2">HomePage</Link>
+                        <Link to={'/category'} className="fw-bold bg-secondary btn btn-dark mx-2">Language</Link>
+                        <Link to={'/genre'} className="fw-bold bg-secondary btn btn-dark mx-2">Genre</Link>
+                    </div>
+                </div>
+            </header>
       <div className="outer-container">
         <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-4 g-3 inner-container">
           {movieData.length > 0 && movieData.map((movie, index) => (
