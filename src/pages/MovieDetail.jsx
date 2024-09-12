@@ -121,7 +121,7 @@ const MovieDetail = () => {
             </header>
             
             <div style={{ backgroundColor: 'DarkSlateGray' }}>
-                {/* <button onClick={() => navigate('/')} className="btn btn-warning fw-bold m-3">Homepage</button> */}
+                <button onClick={() => navigate('/')} className="btn btn-warning fw-bold m-3">Homepage</button>
                 
 
                 {movie && (

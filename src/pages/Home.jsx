@@ -28,8 +28,6 @@ const Home = () => {
                 <div className="container">
                     <div className="d-flex justify-content-center">
                         <Link to={'/'} className="fw-bold bg-secondary btn btn-dark mx-2">HomePage</Link>
-                        <Link to={'/category'} className="fw-bold bg-secondary btn btn-dark mx-2">Language</Link>
-                        <Link to={'/genre'} className="fw-bold bg-secondary btn btn-dark mx-2">Genre</Link>
                     </div>
                 </div>
             </header>
