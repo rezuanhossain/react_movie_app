@@ -466,7 +466,7 @@ const AddMovie = () => {
                                     <td>{new Date(movie.release_date).toLocaleDateString()}</td>
                                     <td>{movie.star_casts}</td>
                                     <td>{movie.durations}</td>
-                                    {/* <td>{movie.category}</td> */}
+                                    <td>{movie.category}</td>
                                     <td>{JSON.parse(movie.genres).map((genre) => (
                                         <div key={genre.value}><span>{genre.label}</span><br /></div>
                                     ))}</td>
