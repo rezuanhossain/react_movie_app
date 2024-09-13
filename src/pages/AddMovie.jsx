@@ -310,7 +310,7 @@ const AddMovie = () => {
         });
     };
 
-
+    // Delete Function
     const handleDeleteImage = (index) => {
         const newAdditionalImages = additionalImages.filter((_, imgIndex) => imgIndex !== index);
         setAdditionalImages(newAdditionalImages);
