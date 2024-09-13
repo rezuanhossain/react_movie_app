@@ -180,6 +180,8 @@ const AddMovie = () => {
           }
     };
 
+    // Edit Function
+
     const handleEdit = async (id) => {
         try {
         
