@@ -7,13 +7,6 @@ const CategoryForm = () => {
   const [categories, setCategories] = useState([]);
   const [newCategory, setNewCategory] = useState("");
 
-  // useEffect(() => {
-  //   const storedCategories = JSON.parse(window.localStorage.getItem('categories'));
-  //   if (storedCategories) {
-  //     setCategories(storedCategories);
-  //   }
-  // }, []);
-
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -28,15 +21,6 @@ const CategoryForm = () => {
     fetchCategories();
   }, []);
 
-  // const handleAddCategory = () => {
-  //   if (newCategory !== "") {
-  //     const updatedCategories = [...categories, newCategory];
-  //     setCategories(updatedCategories);
-  //     window.localStorage.setItem('categories', JSON.stringify(updatedCategories));
-  //     setNewCategory("");
-  //   }
-  // };
-
   const handleAddCategory = async () => {
     if (newCategory !== "") {
       try {
@@ -49,13 +33,6 @@ const CategoryForm = () => {
       }
     }
   };
-
-
-  // const handleDeleteCategory = (index) => {
-  //   const updatedCategories = categories.filter((_, i) => i !== index);
-  //   setCategories(updatedCategories);
-  //   window.localStorage.setItem('categories', JSON.stringify(updatedCategories));
-  // };
 
   const handleDeleteCategory = async (id) => {
     try {

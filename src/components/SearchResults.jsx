@@ -4,8 +4,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 
-
-
 const SearchResults = () => {
   const { searchTerm } = useParams();
   const [searchResults, setSearchResults] = useState([]);

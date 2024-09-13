@@ -7,12 +7,6 @@ const GenreForm = () => {
   const [genres, setGenres] = useState([]);
   const [newGenre, setNewGenre] = useState("");
 
-  // useEffect(() => {
-  //   const storedGenres = JSON.parse(window.localStorage.getItem('genres'));
-  //   if (storedGenres) {
-  //     setGenres(storedGenres);
-  //   }
-  // }, []);
   useEffect(() => {
     const fetchGenre = async () => {
       try {
@@ -27,14 +21,6 @@ const GenreForm = () => {
     fetchGenre();
   }, []);
 
-  // const handleAddGenre = () => {
-  //   if (newGenre !== "") {
-  //     const updatedGenres = [...genres, newGenre];
-  //     setGenres(updatedGenres);
-  //     window.localStorage.setItem('genres', JSON.stringify(updatedGenres));
-  //     setNewGenre("");
-  //   }
-  // };
   const handleAddGenre = async () => {
     if (newGenre !== "") {
       try {
@@ -48,11 +34,6 @@ const GenreForm = () => {
     }
   };
 
-  // const handleDeleteGenre = (index) => {
-  //   const updatedGenres = genres.filter((_, i) => i !== index);
-  //   setGenres(updatedGenres);
-  //   window.localStorage.setItem('genres', JSON.stringify(updatedGenres));
-  // };
   const handleDeleteGenre = async (id) => {
     try {
       await callApi.post('/genres/destroy', { id : id });

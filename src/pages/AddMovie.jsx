@@ -167,7 +167,6 @@ const AddMovie = () => {
         setSelectedRelatedMovies([]);
     };
 
-
     //Delete Function
 
     const handleDelete = async (id) => {

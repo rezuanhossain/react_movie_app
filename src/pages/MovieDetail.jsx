@@ -11,7 +11,6 @@ import Viewer from 'react-viewer';
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
-
 const MovieDetail = () => {
     const { movieId } = useParams();
     const [movie, setMovie] = useState(null);
@@ -153,7 +152,6 @@ const MovieDetail = () => {
                                 ></iframe>
                             </div>
                         )}
-
 
                         {activeTab === 'gallery' && (
                             <div>
