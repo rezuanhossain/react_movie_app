@@ -110,16 +110,6 @@ const MovieDetail = () => {
        
     return (
         <div>
-            <header className="bg-light py-3 mb-4">
-                <div className="container">
-                    <div className="d-flex justify-content-center">
-                        <Link to={'/'} className="btn btn-outline-primary mx-2">HomePage</Link>
-                        <Link to={'/category'} className="btn btn-outline-primary mx-2">Category</Link>
-                        <Link to={'/genre'} className="btn btn-outline-primary mx-2">Genre</Link>
-                    </div>
-                </div>
-            </header>
-            
             <div style={{ backgroundColor: 'DarkSlateGray' }}>
                 <button onClick={() => navigate('/')} className="btn btn-warning fw-bold m-3">Homepage</button>
                 
