@@ -136,7 +136,6 @@ const AddMovie = () => {
                 response = await callApi.post('/movies', formData, { withCredentials: true });
                 console.log('Movie created successfully:', response.data);
             }
-    
             fetchMovies(); 
             resetFormState(); 
     

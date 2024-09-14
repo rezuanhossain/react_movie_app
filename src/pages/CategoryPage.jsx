@@ -8,7 +8,6 @@ const CategoryPage = () => {
 
   return (
     <div>
-      
       <CategoryForm selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} />
     </div>
   );
