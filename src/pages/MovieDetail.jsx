@@ -131,7 +131,7 @@ const MovieDetail = () => {
                                 <p>Release Date: {new Date(movie.release_date).toLocaleDateString()}</p>
                                 <p>Star Cast: {movie.star_cast}</p>
                                 <p>Duration: {movie.durations} minutes</p>
-                                <p>Category: {movie.category.name}</p>
+                                <p>Category: {movie.category}</p>
                                 <p>Genre: {movie.genres.map((genre) => genre.label).join(', ')}</p>
                             </div>
                         )}
